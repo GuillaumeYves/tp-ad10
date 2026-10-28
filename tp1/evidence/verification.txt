@@ -1,0 +1,102 @@
+=== Système et virtualisation ===
+2026-10-28T08:37:05+00:00
+ Static hostname: tp1-admin
+       Icon name: computer-vm
+         Chassis: vm 🖴
+      Machine ID: 125f18e160394ff6a95068ff3e2d930c
+         Boot ID: 142262dbb4fd404ab89ff050f369d741
+  Virtualization: kvm
+Operating System: Ubuntu 24.04.5 LTS
+          Kernel: Linux 6.8.0-147-generic
+    Architecture: x86-64
+ Hardware Vendor: QEMU
+  Hardware Model: Ubuntu 24.04 PC v2 _i440FX + PIIX, arch_caps fix, 1996_
+Firmware Version: 1.16.3-debian-1.16.3-2
+   Firmware Date: Tue 2014-04-01
+    Firmware Age: 12y 6month 3w 6d
+kvm
+
+=== Utilisateurs et ACL ===
+uid=1001(alice) gid=1001(alice) groups=1001(alice)
+uid=1002(bob) gid=1002(bob) groups=1002(bob)
+uid=1003(carol) gid=1003(carol) groups=1003(carol)
+getfacl: Removing leading '/' from absolute path names
+# file: srv/data
+# owner: root
+# group: root
+user::rwx
+user:alice:rwx
+user:bob:r-x
+user:carol:---
+group::---
+mask::rwx
+other::---
+default:user::rwx
+default:user:alice:rwx
+default:user:bob:r-x
+default:user:carol:---
+default:group::---
+default:mask::rwx
+default:other::---
+
+Données de test du TP1.
+touch: cannot touch '/srv/data/bob.txt': Permission denied
+ls: cannot open directory '/srv/data': Permission denied
+PASS : Alice écrit, Bob lit sans écrire, Carol ne peut pas accéder.
+
+=== Sauvegarde et restauration ===
+Sauvegarde créée : /backup/data-20261028T083705680260934Z.tar.gz
+-rw------- 1 root root 461 Oct 28 08:37 /backup/data-20261028T083705680260934Z.tar.gz
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+MAILTO=""
+
+# Sauvegarder chaque jour à 02 h 00, heure de la VM.
+0 2 * * * root /usr/local/sbin/backup-data >> /var/log/backup-data.log 2>&1
+active
+PASS : contenu et ACL restaurés à l’identique.
+
+=== Charge et priorité ===
+top - 08:37:05 up 0 min,  1 user,  load average: 0.14, 0.03, 0.01
+Tasks: 102 total,   1 running, 101 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.0 us,  4.8 sy,  0.0 ni, 95.2 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st 
+MiB Mem :    709.1 total,    198.6 free,    212.8 used,    420.8 buff/cache     
+MiB Swap:      0.0 total,      0.0 free,      0.0 used.    496.4 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+      1 root      20   0   22332  13444   9560 S   0.0   1.9   0:02.47 systemd
+      2 root      20   0       0      0      0 S   0.0   0.0   0:00.00 kthreadd
+      3 root      20   0       0      0      0 S   0.0   0.0   0:00.00 pool_wo+
+      4 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker+
+      5 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker+
+stress-ng: info:  [1949] setting to a 15 secs run per stressor
+stress-ng: info:  [1949] dispatching hogs: 2 cpu
+1949 (process ID) old priority 0, new priority 10
+1951 (process ID) old priority 0, new priority 10
+1952 (process ID) old priority 0, new priority 10
+    PID    PPID  NI %CPU COMMAND
+   1949    1905  10  0.4 stress-ng
+   1951    1949  10 99.0 stress-ng-cpu
+   1952    1949  10 99.5 stress-ng-cpu
+top - 08:37:08 up 0 min,  1 user,  load average: 0.14, 0.03, 0.01
+Tasks: 105 total,   3 running, 102 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.0 us,  0.0 sy,100.0 ni,  0.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st 
+MiB Mem :    709.1 total,    176.6 free,    234.0 used,    437.9 buff/cache     
+MiB Swap:      0.0 total,      0.0 free,      0.0 used.    475.1 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+   1951 root      30  10   60784   5556   2444 R 100.0   0.8   0:02.18 stress-+
+   1952 root      30  10   60784   5556   2444 R 100.0   0.8   0:02.19 stress-+
+      1 root      20   0   22332  13444   9560 S   0.0   1.9   0:02.47 systemd
+      2 root      20   0       0      0      0 S   0.0   0.0   0:00.00 kthreadd
+      3 root      20   0       0      0      0 S   0.0   0.0   0:00.00 pool_wo+
+      4 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker+
+      5 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker+
+      6 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker+
+      7 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker+
+stress-ng: info:  [1949] skipped: 0
+stress-ng: info:  [1949] passed: 2: cpu (2)
+stress-ng: info:  [1949] failed: 0
+stress-ng: info:  [1949] metrics untrustworthy: 0
+stress-ng: info:  [1949] successful run completed in 15.00 secs
+PASS : processus et travailleurs exécutés avec nice=10.

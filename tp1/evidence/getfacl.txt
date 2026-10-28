@@ -1,0 +1,19 @@
+# file: srv/data
+# owner: root
+# group: root
+user::rwx
+user:alice:rwx
+user:bob:r-x
+user:carol:---
+group::---
+mask::rwx
+other::---
+default:user::rwx
+default:user:alice:rwx
+default:user:bob:r-x
+default:user:carol:---
+default:group::---
+default:mask::rwx
+default:other::---
+
+getfacl: Removing leading '/' from absolute path names

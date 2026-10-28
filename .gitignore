@@ -1,0 +1,10 @@
+.lab/
+.venv/
+__pycache__/
+*.pyc
+*.retry
+*.key
+*.pem
+.env
+secrets.yml
+reports/**/private/

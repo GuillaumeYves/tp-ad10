@@ -1,0 +1,6 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+MAILTO=""
+
+# Sauvegarder chaque jour à 02 h 00, heure de la VM.
+0 2 * * * root /usr/local/sbin/backup-data >> /var/log/backup-data.log 2>&1

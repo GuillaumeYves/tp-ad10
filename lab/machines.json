@@ -1,0 +1,12 @@
+{
+  "tp1-admin": {"address": "192.168.77.11", "ssh_port": 2211, "memory": 768},
+  "tp2-security": {"address": "192.168.77.12", "ssh_port": 2212, "memory": 768},
+  "edge": {"address": "192.168.77.20", "ssh_port": 2220, "memory": 768, "ports": {"8080": 80, "8443": 443}},
+  "web1": {"address": "192.168.77.21", "ssh_port": 2221, "memory": 768},
+  "web2": {"address": "192.168.77.22", "ssh_port": 2222, "memory": 768},
+  "db1": {"address": "192.168.77.31", "ssh_port": 2231, "memory": 1024},
+  "db2": {"address": "192.168.77.32", "ssh_port": 2232, "memory": 1024},
+  "tp4-web1": {"address": "192.168.77.41", "ssh_port": 2241, "memory": 768, "ports": {"8041": 80}},
+  "tp4-web2": {"address": "192.168.77.42", "ssh_port": 2242, "memory": 768, "ports": {"8042": 80}},
+  "monitor": {"address": "192.168.77.50", "ssh_port": 2250, "memory": 2048, "ports": {"3000": 3000, "9090": 9090, "9093": 9093}}
+}
