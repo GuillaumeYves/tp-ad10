@@ -1,0 +1,248 @@
+{
+  "nodes": [
+    {
+      "metric": {
+        "__name__": "up",
+        "host": "db1",
+        "instance": "192.168.77.31:9100",
+        "job": "nodes"
+      },
+      "value": [
+        1793179745.491,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "up",
+        "host": "db2",
+        "instance": "192.168.77.32:9100",
+        "job": "nodes"
+      },
+      "value": [
+        1793179745.491,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "up",
+        "host": "edge",
+        "instance": "192.168.77.20:9100",
+        "job": "nodes"
+      },
+      "value": [
+        1793179745.491,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "up",
+        "host": "monitor",
+        "instance": "192.168.77.50:9100",
+        "job": "nodes"
+      },
+      "value": [
+        1793179745.491,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "up",
+        "host": "web1",
+        "instance": "192.168.77.21:9100",
+        "job": "nodes"
+      },
+      "value": [
+        1793179745.491,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "up",
+        "host": "web2",
+        "instance": "192.168.77.22:9100",
+        "job": "nodes"
+      },
+      "value": [
+        1793179745.491,
+        "1"
+      ]
+    }
+  ],
+  "services": [
+    {
+      "metric": {
+        "__name__": "ad10_service_up",
+        "host": "db1",
+        "instance": "192.168.77.31:9100",
+        "job": "nodes",
+        "service": "cron"
+      },
+      "value": [
+        1793179745.496,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "ad10_service_up",
+        "host": "db1",
+        "instance": "192.168.77.31:9100",
+        "job": "nodes",
+        "service": "mariadb"
+      },
+      "value": [
+        1793179745.496,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "ad10_service_up",
+        "host": "db2",
+        "instance": "192.168.77.32:9100",
+        "job": "nodes",
+        "service": "mariadb"
+      },
+      "value": [
+        1793179745.496,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "ad10_service_up",
+        "host": "edge",
+        "instance": "192.168.77.20:9100",
+        "job": "nodes",
+        "service": "haproxy"
+      },
+      "value": [
+        1793179745.496,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "ad10_service_up",
+        "host": "monitor",
+        "instance": "192.168.77.50:9100",
+        "job": "nodes",
+        "service": "ad10-alert-receiver"
+      },
+      "value": [
+        1793179745.496,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "ad10_service_up",
+        "host": "monitor",
+        "instance": "192.168.77.50:9100",
+        "job": "nodes",
+        "service": "grafana-server"
+      },
+      "value": [
+        1793179745.496,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "ad10_service_up",
+        "host": "monitor",
+        "instance": "192.168.77.50:9100",
+        "job": "nodes",
+        "service": "prometheus"
+      },
+      "value": [
+        1793179745.496,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "ad10_service_up",
+        "host": "monitor",
+        "instance": "192.168.77.50:9100",
+        "job": "nodes",
+        "service": "prometheus-alertmanager"
+      },
+      "value": [
+        1793179745.496,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "ad10_service_up",
+        "host": "web1",
+        "instance": "192.168.77.21:9100",
+        "job": "nodes",
+        "service": "nginx"
+      },
+      "value": [
+        1793179745.496,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "ad10_service_up",
+        "host": "web1",
+        "instance": "192.168.77.21:9100",
+        "job": "nodes",
+        "service": "php8.3-fpm"
+      },
+      "value": [
+        1793179745.496,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "ad10_service_up",
+        "host": "web2",
+        "instance": "192.168.77.22:9100",
+        "job": "nodes",
+        "service": "nginx"
+      },
+      "value": [
+        1793179745.496,
+        "1"
+      ]
+    },
+    {
+      "metric": {
+        "__name__": "ad10_service_up",
+        "host": "web2",
+        "instance": "192.168.77.22:9100",
+        "job": "nodes",
+        "service": "php8.3-fpm"
+      },
+      "value": [
+        1793179745.496,
+        "1"
+      ]
+    }
+  ],
+  "replication": [
+    {
+      "metric": {
+        "__name__": "ad10_replica_io_running",
+        "host": "db2",
+        "instance": "192.168.77.32:9100",
+        "job": "nodes"
+      },
+      "value": [
+        1793179745.495,
+        "1"
+      ]
+    }
+  ]
+}

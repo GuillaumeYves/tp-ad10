@@ -6,7 +6,7 @@ Le cluster comprend cinq VM Ubuntu 24.04.5 LTS : deux serveurs Nginx/PHP, deux s
 
 ![Schéma réseau](../docs/network.svg)
 
-Le serveur de supervision représenté sur le schéma est ajouté au TP5. Les échanges applicatifs passent par `edge`. Le port 3306 dirige les écritures vers le primaire ; 3307 dirige les lectures vers le primaire, puis vers la réplique s'il est indisponible.
+Le serveur de supervision représenté sur le schéma est ajouté au TP5, et HTTPS dans le projet final. Les échanges applicatifs passent par `edge`. Le port 3306 dirige les écritures vers le primaire ; 3307 dirige les lectures vers le primaire, puis vers la réplique s'il est indisponible.
 
 ## Déploiement
 

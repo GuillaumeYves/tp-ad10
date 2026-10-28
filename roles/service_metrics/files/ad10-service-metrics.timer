@@ -1,0 +1,10 @@
+[Unit]
+Description=Collecte des services AD10 toutes les quinze secondes
+
+[Timer]
+OnBootSec=15s
+OnUnitActiveSec=15s
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target

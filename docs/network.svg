@@ -13,7 +13,7 @@
       <rect x="20" y="175" width="235" height="90" rx="8"/>
     </g>
     <text x="500" y="100" font-size="18">Poste de contrôle</text>
-    <text x="500" y="203" font-size="18">edge : HAProxy</text><text x="500" y="232" font-size="16">192.168.77.20</text><text x="500" y="253" font-size="13">HTTP 80 / DB 3306, 3307</text>
+    <text x="500" y="203" font-size="18">edge : HAProxy</text><text x="500" y="232" font-size="16">192.168.77.20</text><text x="500" y="253" font-size="12">HTTP(S) 80, 443 / SQL 3306, 3307</text>
     <text x="250" y="363" font-size="18">web1 : Nginx + PHP</text><text x="250" y="393" font-size="16">192.168.77.21</text>
     <text x="750" y="363" font-size="18">web2 : Nginx + PHP</text><text x="750" y="393" font-size="16">192.168.77.22</text>
     <text x="250" y="518" font-size="18">db1 : MariaDB primaire</text><text x="250" y="548" font-size="16">192.168.77.31</text>

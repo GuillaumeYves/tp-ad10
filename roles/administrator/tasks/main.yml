@@ -1,0 +1,33 @@
+- name: Créer le compte administrateur Alice
+  ansible.builtin.user:
+    name: alice
+    shell: /bin/bash
+    groups: sudo
+    append: true
+    create_home: true
+    password_lock: true
+
+- name: Créer le répertoire SSH d'Alice
+  ansible.builtin.file:
+    path: /home/alice/.ssh
+    state: directory
+    owner: alice
+    group: alice
+    mode: '0700'
+
+- name: Installer la clé publique du laboratoire
+  ansible.builtin.copy:
+    content: '{{ lookup("file", playbook_dir + "/../.lab/id_ed25519.pub") }}'
+    dest: /home/alice/.ssh/authorized_keys
+    owner: alice
+    group: alice
+    mode: '0600'
+
+- name: Autoriser l'administration automatisée par sudo
+  ansible.builtin.copy:
+    content: "alice ALL=(ALL) NOPASSWD: ALL\n"
+    dest: /etc/sudoers.d/90-alice-ad10
+    owner: root
+    group: root
+    mode: '0440'
+    validate: /usr/sbin/visudo -cf %s

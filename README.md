@@ -5,13 +5,21 @@ Travaux pratiques réalisés sur des VM Ubuntu Server 24.04 LTS dédiées.
 | Exercice | Sujet | Dossier |
 | --- | --- | --- |
 | TP1 | ACL, sauvegarde et gestion de charge | [tp1](tp1/) |
-| TP2 | SSH, pare-feu et audit | tp2 |
-| TP3 | Services web, réplication et répartition de charge | tp3 |
-| TP4 | Bash et Ansible | tp4 |
-| TP5 | Supervision et alertes | tp5 |
-| Projet final | Infrastructure intégrée | final |
+| TP2 | SSH, pare-feu et audit | [tp2](tp2/) |
+| TP3 | Services web, réplication et répartition de charge | [tp3](tp3/) |
+| TP4 | Bash et Ansible | [tp4](tp4/) |
+| TP5 | Supervision et alertes | [tp5](tp5/) |
+| Projet final | Infrastructure intégrée | [final](final/) |
 
 Chaque exercice terminé fait l'objet d'un commit distinct. Les rapports contiennent les commandes exécutées, les configurations et les résultats des vérifications.
+
+[Rapport complet en PDF](docs/rapport-complet.pdf). Chaque dossier contient aussi son propre `report.pdf`, les scripts et les preuves d'exécution.
+
+## Résultat final
+
+Les cinq TP et le projet intégrateur ont été exécutés sur de vraies VM KVM. Les preuves comprennent les ACL et refus d'accès, une restauration de sauvegarde, un bannissement SSH, les traces auditd, la réplication SQL, les essais de panne web et DB, ainsi qu'une alerte mémoire réelle avec sa résolution.
+
+Le projet final ajoute HTTPS, la segmentation réseau, le durcissement des six VM et la supervision de leurs services. [Installation et exploitation](final/README.md). Le dépôt est public pour partager les livrables ; les services restent accessibles localement sur le poste qui héberge les VM.
 
 ## Laboratoire
 

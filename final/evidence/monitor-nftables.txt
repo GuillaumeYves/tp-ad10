@@ -1,0 +1,21 @@
+table inet filter {
+	chain input {
+		type filter hook input priority filter; policy drop;
+		iifname "lo" accept
+		ct state invalid drop
+		ct state established,related accept
+		iifname "ens3" udp sport 67 udp dport 68 accept
+		tcp dport 22 ct state new counter packets 18 bytes 792 accept
+		ip saddr 10.0.2.2 tcp dport { 3000, 9090, 9093 } ct state new counter packets 16 bytes 704 accept
+		ip saddr 192.168.77.50 tcp dport 9100 ct state new counter packets 0 bytes 0 accept
+		counter packets 4 bytes 384 drop
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy drop;
+	}
+
+	chain output {
+		type filter hook output priority filter; policy accept;
+	}
+}

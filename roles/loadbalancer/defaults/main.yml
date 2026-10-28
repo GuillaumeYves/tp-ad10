@@ -1,0 +1,2 @@
+loadbalancer_tls_enabled: false
+loadbalancer_public_url: https://localhost:8443

@@ -1,0 +1,51 @@
+
+PLAY [Préparer le compte d'administration du cluster] **************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [edge]
+ok: [db2]
+ok: [web1]
+ok: [web2]
+ok: [db1]
+ok: [monitor]
+
+TASK [administrator : Créer le compte administrateur Alice] ********************
+changed: [db1]
+changed: [db2]
+changed: [web2]
+changed: [web1]
+changed: [edge]
+changed: [monitor]
+
+TASK [administrator : Créer le répertoire SSH d'Alice] *************************
+changed: [db1]
+changed: [db2]
+changed: [web1]
+changed: [edge]
+changed: [web2]
+changed: [monitor]
+
+TASK [administrator : Installer la clé publique du laboratoire] ****************
+changed: [db1]
+changed: [db2]
+changed: [edge]
+changed: [web2]
+changed: [web1]
+changed: [monitor]
+
+TASK [administrator : Autoriser l'administration automatisée par sudo] *********
+changed: [web1]
+changed: [db1]
+changed: [db2]
+changed: [edge]
+changed: [web2]
+changed: [monitor]
+
+PLAY RECAP *********************************************************************
+db1                        : ok=5    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+db2                        : ok=5    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+edge                       : ok=5    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+monitor                    : ok=5    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+web1                       : ok=5    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+web2                       : ok=5    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

@@ -1,0 +1,33 @@
+- name: Déployer le cluster web et la réplication
+  ansible.builtin.import_playbook: ../tp3/deploy.yml
+  vars:
+    loadbalancer_tls_enabled: true
+
+- name: Installer les exporteurs sur tout le cluster
+  hosts: cluster:monitoring
+  become: true
+  roles: [node_exporter]
+
+- name: Superviser l'ensemble des serveurs
+  hosts: monitoring
+  become: true
+  vars_files: [../.lab/secrets.json]
+  vars:
+    monitoring_targets: '{{ groups["cluster"] + groups["monitoring"] }}'
+  roles: [monitoring]
+
+- name: Sauvegarder la base principale
+  hosts: db1
+  become: true
+  roles: [db_backup]
+
+- name: Protéger et superviser les services
+  hosts: cluster:monitoring
+  become: true
+  force_handlers: true
+  vars_files: [network.yml]
+  vars:
+    monitored_services: '{{ service_map[inventory_hostname] }}'
+    firewall_public_tcp_ports: '{{ public_ports[inventory_hostname] }}'
+    firewall_trusted_tcp_rules: '{{ trusted_ports[inventory_hostname] }}'
+  roles: [service_metrics, firewall, security]

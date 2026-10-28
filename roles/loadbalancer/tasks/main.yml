@@ -5,6 +5,26 @@
     update_cache: true
     cache_valid_time: 3600
 
+- name: Créer le répertoire du certificat HTTPS
+  ansible.builtin.file:
+    path: /etc/haproxy/certs
+    state: directory
+    owner: root
+    group: haproxy
+    mode: '0750'
+  when: loadbalancer_tls_enabled
+
+- name: Installer le certificat et sa clé privée
+  ansible.builtin.copy:
+    src: '{{ playbook_dir }}/../.lab/tls/edge.pem'
+    dest: /etc/haproxy/certs/edge.pem
+    owner: root
+    group: haproxy
+    mode: '0640'
+  when: loadbalancer_tls_enabled
+  no_log: true
+  notify: Reload HAProxy
+
 - name: Déployer la configuration HAProxy
   ansible.builtin.template:
     src: haproxy.cfg.j2

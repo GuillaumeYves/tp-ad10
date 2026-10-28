@@ -1,0 +1,22 @@
+- name: Reload hardened SSH
+  # Recharger aussi les anciens écouteurs conservés après une mise à jour.
+  ansible.builtin.command:
+    argv: [pkill, --signal, HUP, --full, '^sshd:.*\[listener\]']
+  changed_when: true
+
+- name: Restart hardened Fail2ban
+  ansible.builtin.service:
+    name: fail2ban
+    state: restarted
+
+- name: Load persistent audit rules
+  ansible.builtin.command: augenrules --load
+  changed_when: true
+
+- name: Generate lab network
+  ansible.builtin.command: netplan generate
+  changed_when: true
+
+- name: Reload service definitions
+  ansible.builtin.systemd_service:
+    daemon_reload: true

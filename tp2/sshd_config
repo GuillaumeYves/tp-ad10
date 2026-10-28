@@ -1,4 +1,4 @@
-# Écouter sur le port SSH standard.
+# Utiliser le port SSH standard.
 Port 22
 
 # Autoriser uniquement Alice avec une clé publique.

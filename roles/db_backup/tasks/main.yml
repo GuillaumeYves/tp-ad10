@@ -1,0 +1,37 @@
+- name: Installer cron
+  ansible.builtin.apt:
+    name: cron
+    state: present
+
+- name: Installer le script de sauvegarde
+  ansible.builtin.copy:
+    src: backup-shop.sh
+    dest: /usr/local/sbin/backup-shop
+    owner: root
+    group: root
+    mode: '0750'
+
+- name: Planifier la sauvegarde quotidienne
+  ansible.builtin.cron:
+    name: Sauvegarde quotidienne de shop
+    cron_file: backup-shop
+    user: root
+    hour: '2'
+    minute: '30'
+    job: /usr/local/sbin/backup-shop >> /var/log/backup-shop.log 2>&1
+
+- name: Activer cron
+  ansible.builtin.service:
+    name: cron
+    state: started
+    enabled: true
+
+- name: Vérifier la présence d'une première sauvegarde
+  ansible.builtin.stat:
+    path: /backup/last-success
+  register: backup_marker
+
+- name: Créer la première sauvegarde
+  ansible.builtin.command: /usr/local/sbin/backup-shop
+  when: not backup_marker.stat.exists
+  changed_when: true

@@ -1,0 +1,26 @@
+- name: Installer le collecteur des services
+  ansible.builtin.copy:
+    src: service_metrics.py
+    dest: /usr/local/sbin/ad10-service-metrics
+    mode: '0750'
+  notify: Refresh service metrics
+
+- name: Configurer le service de collecte
+  ansible.builtin.template:
+    src: ad10-service-metrics.service.j2
+    dest: /etc/systemd/system/ad10-service-metrics.service
+    mode: '0644'
+  notify: Refresh service metrics
+
+- name: Déployer le minuteur de collecte
+  ansible.builtin.copy:
+    src: ad10-service-metrics.timer
+    dest: /etc/systemd/system/ad10-service-metrics.timer
+    mode: '0644'
+
+- name: Activer la collecte périodique
+  ansible.builtin.systemd_service:
+    name: ad10-service-metrics.timer
+    daemon_reload: true
+    enabled: true
+    state: started

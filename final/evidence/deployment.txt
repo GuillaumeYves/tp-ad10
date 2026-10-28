@@ -1,0 +1,422 @@
+
+PLAY [Installer les serveurs de base de données] *******************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [db1]
+ok: [db2]
+
+TASK [database : Installer MariaDB et son connecteur Python] *******************
+ok: [db1]
+ok: [db2]
+
+TASK [database : Créer le répertoire des journaux binaires] ********************
+ok: [db1]
+ok: [db2]
+
+TASK [database : Configurer le serveur de base de données] *********************
+ok: [db1]
+ok: [db2]
+
+TASK [database : Activer MariaDB] **********************************************
+ok: [db1]
+ok: [db2]
+
+TASK [database : Appliquer la configuration avant la réplication] **************
+
+TASK [database : Appliquer la configuration avant la réplication] **************
+
+PLAY [Préparer le compte de réplication] ***************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [db1]
+
+TASK [Créer le compte de réplication limité à la réplique] *********************
+[WARNING]: MariaDB has been detected: its support will be dropped in 6.0.0. For MariaDB automation, please use the ansible.mariadb collection instead.
+ok: [db1]
+
+PLAY [Activer la réplication] **************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [db2]
+
+TASK [Examiner la réplication existante] ***************************************
+ok: [db2]
+
+TASK [Configurer la source sur une réplique neuve] *****************************
+skipping: [db2]
+
+TASK [Démarrer la réplication] *************************************************
+skipping: [db2]
+
+PLAY [Créer la base et les données applicatives] *******************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [db1]
+
+TASK [Créer la base shop] ******************************************************
+ok: [db1]
+
+TASK [Autoriser le compte applicatif depuis le proxy] **************************
+ok: [db1]
+
+TASK [Vérifier la présence du catalogue] ***************************************
+ok: [db1]
+
+TASK [Initialiser le catalogue neuf] *******************************************
+skipping: [db1]
+
+PLAY [Déployer les serveurs web] ***********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [web1]
+ok: [web2]
+
+TASK [web : Installer Nginx et PHP] ********************************************
+ok: [web2]
+ok: [web1]
+
+TASK [web : Créer le répertoire du site] ***************************************
+ok: [web1]
+ok: [web2]
+
+TASK [web : Déployer la page de test] ******************************************
+ok: [web1]
+ok: [web2]
+
+TASK [web : Déployer la configuration applicative hors du site] ****************
+ok: [web1]
+ok: [web2]
+
+TASK [web : Configurer Nginx] **************************************************
+ok: [web1]
+ok: [web2]
+
+TASK [web : Retirer le site par défaut] ****************************************
+ok: [web1]
+ok: [web2]
+
+TASK [web : Activer le site] ***************************************************
+ok: [web1]
+ok: [web2]
+
+TASK [web : Activer les services web] ******************************************
+ok: [web1] => (item=nginx)
+ok: [web2] => (item=nginx)
+ok: [web1] => (item=php8.3-fpm)
+ok: [web2] => (item=php8.3-fpm)
+
+PLAY [Déployer le répartiteur de charge] ***************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [edge]
+
+TASK [loadbalancer : Installer HAProxy] ****************************************
+ok: [edge]
+
+TASK [loadbalancer : Créer le répertoire du certificat HTTPS] ******************
+ok: [edge]
+
+TASK [loadbalancer : Installer le certificat et sa clé privée] *****************
+ok: [edge]
+
+TASK [loadbalancer : Déployer la configuration HAProxy] ************************
+ok: [edge]
+
+TASK [loadbalancer : Activer HAProxy] ******************************************
+ok: [edge]
+
+PLAY [Installer les exporteurs sur tout le cluster] ****************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [web1]
+ok: [db1]
+ok: [web2]
+ok: [edge]
+ok: [db2]
+ok: [monitor]
+
+TASK [node_exporter : Installer Node Exporter] *********************************
+ok: [web1]
+ok: [web2]
+ok: [db1]
+ok: [db2]
+ok: [edge]
+ok: [monitor]
+
+TASK [node_exporter : Créer le répertoire des métriques locales] ***************
+ok: [web1]
+ok: [web2]
+ok: [db1]
+ok: [edge]
+ok: [db2]
+ok: [monitor]
+
+TASK [node_exporter : Configurer l'écoute sur le réseau privé] *****************
+ok: [web1]
+ok: [web2]
+ok: [db1]
+ok: [db2]
+ok: [edge]
+ok: [monitor]
+
+TASK [node_exporter : Activer Node Exporter] ***********************************
+ok: [web1]
+ok: [web2]
+ok: [db2]
+ok: [edge]
+ok: [db1]
+ok: [monitor]
+
+PLAY [Superviser l'ensemble des serveurs] **************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [monitor]
+
+TASK [monitoring : Installer Prometheus et Alertmanager] ***********************
+ok: [monitor]
+
+TASK [monitoring : Créer le répertoire des clés APT] ***************************
+ok: [monitor]
+
+TASK [monitoring : Télécharger la clé du dépôt officiel Grafana] ***************
+ok: [monitor]
+
+TASK [monitoring : Déclarer le dépôt stable Grafana OSS] ***********************
+ok: [monitor]
+
+TASK [monitoring : Installer Grafana] ******************************************
+ok: [monitor]
+
+TASK [monitoring : Créer les répertoires de données] ***************************
+ok: [monitor] => (item=/var/lib/prometheus/metrics2)
+ok: [monitor] => (item=/var/lib/prometheus/alertmanager)
+
+TASK [monitoring : Déployer les règles d'alerte] *******************************
+ok: [monitor]
+
+TASK [monitoring : Déployer la configuration Prometheus] ***********************
+ok: [monitor]
+
+TASK [monitoring : Définir les arguments Prometheus] ***************************
+ok: [monitor]
+
+TASK [monitoring : Configurer Alertmanager] ************************************
+ok: [monitor]
+
+TASK [monitoring : Définir les arguments Alertmanager] *************************
+ok: [monitor]
+
+TASK [monitoring : Déployer le récepteur local d'alertes] **********************
+ok: [monitor]
+
+TASK [monitoring : Installer le service de réception] **************************
+ok: [monitor]
+
+TASK [monitoring : Configurer Grafana] *****************************************
+ok: [monitor]
+
+TASK [monitoring : Créer le répertoire des tableaux de bord] *******************
+ok: [monitor]
+
+TASK [monitoring : Provisionner la source de données] **************************
+ok: [monitor]
+
+TASK [monitoring : Provisionner le tableau de bord] ****************************
+ok: [monitor] => (item={'source': 'dashboard-provider.yml', 'destination': '/etc/grafana/provisioning/dashboards/ad10.yml'})
+ok: [monitor] => (item={'source': 'dashboard.json', 'destination': '/var/lib/grafana/dashboards/ad10.json'})
+
+TASK [monitoring : Activer les services de supervision] ************************
+ok: [monitor] => (item=ad10-alert-receiver)
+ok: [monitor] => (item=prometheus)
+ok: [monitor] => (item=prometheus-alertmanager)
+ok: [monitor] => (item=grafana-server)
+
+PLAY [Sauvegarder la base principale] ******************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [db1]
+
+TASK [db_backup : Installer cron] **********************************************
+ok: [db1]
+
+TASK [db_backup : Installer le script de sauvegarde] ***************************
+ok: [db1]
+
+TASK [db_backup : Planifier la sauvegarde quotidienne] *************************
+ok: [db1]
+
+TASK [db_backup : Activer cron] ************************************************
+ok: [db1]
+
+TASK [db_backup : Vérifier la présence d'une première sauvegarde] **************
+ok: [db1]
+
+TASK [db_backup : Créer la première sauvegarde] ********************************
+skipping: [db1]
+
+PLAY [Protéger et superviser les services] *************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [web1]
+ok: [web2]
+ok: [edge]
+ok: [db1]
+ok: [db2]
+ok: [monitor]
+
+TASK [service_metrics : Installer le collecteur des services] ******************
+ok: [web1]
+ok: [edge]
+ok: [web2]
+ok: [db1]
+ok: [db2]
+ok: [monitor]
+
+TASK [service_metrics : Configurer le service de collecte] *********************
+ok: [web1]
+ok: [web2]
+ok: [db1]
+ok: [edge]
+ok: [db2]
+ok: [monitor]
+
+TASK [service_metrics : Déployer le minuteur de collecte] **********************
+ok: [web1]
+ok: [db1]
+ok: [web2]
+ok: [db2]
+ok: [edge]
+ok: [monitor]
+
+TASK [service_metrics : Activer la collecte périodique] ************************
+ok: [web1]
+ok: [web2]
+ok: [db1]
+ok: [edge]
+ok: [db2]
+ok: [monitor]
+
+TASK [firewall : Installer nftables] *******************************************
+ok: [web2]
+ok: [edge]
+ok: [db1]
+ok: [db2]
+ok: [web1]
+ok: [monitor]
+
+TASK [firewall : Recenser les services installés] ******************************
+ok: [edge]
+ok: [web2]
+ok: [web1]
+ok: [db2]
+ok: [db1]
+ok: [monitor]
+
+TASK [firewall : Déployer et valider les règles du pare-feu] *******************
+ok: [web1]
+ok: [db2]
+ok: [db1]
+ok: [web2]
+ok: [edge]
+ok: [monitor]
+
+TASK [firewall : Activer le pare-feu au démarrage] *****************************
+ok: [web1]
+ok: [web2]
+ok: [db1]
+ok: [db2]
+ok: [edge]
+ok: [monitor]
+
+TASK [security : Désactiver l'attente d'annonces IPv6 sur le réseau IPv4 du laboratoire] ***
+ok: [web1]
+ok: [web2]
+ok: [db1]
+ok: [edge]
+ok: [db2]
+ok: [monitor]
+
+TASK [security : Créer le répertoire de configuration de l'attente réseau] *****
+changed: [web1]
+changed: [web2]
+changed: [db1]
+changed: [edge]
+changed: [db2]
+changed: [monitor]
+
+TASK [security : Attendre explicitement la connectivité IPv4 du laboratoire] ***
+changed: [web1]
+changed: [edge]
+changed: [db1]
+changed: [web2]
+changed: [db2]
+changed: [monitor]
+
+TASK [security : Installer les services de sécurité] ***************************
+ok: [web1]
+ok: [db1]
+ok: [web2]
+ok: [edge]
+ok: [db2]
+ok: [monitor]
+
+TASK [security : Installer la configuration SSH validée] ***********************
+ok: [web1]
+ok: [web2]
+ok: [edge]
+ok: [db2]
+ok: [db1]
+ok: [monitor]
+
+TASK [security : Configurer la protection contre les tentatives SSH] ***********
+ok: [web1]
+ok: [db1]
+ok: [web2]
+ok: [edge]
+ok: [db2]
+ok: [monitor]
+
+TASK [security : Installer la surveillance du fichier des comptes] *************
+ok: [web1]
+ok: [db1]
+ok: [web2]
+ok: [edge]
+ok: [db2]
+ok: [monitor]
+
+TASK [security : Activer les services de sécurité] *****************************
+ok: [web1] => (item=ssh)
+ok: [web2] => (item=ssh)
+ok: [db1] => (item=ssh)
+ok: [edge] => (item=ssh)
+ok: [db2] => (item=ssh)
+ok: [web1] => (item=fail2ban)
+ok: [db1] => (item=fail2ban)
+ok: [db2] => (item=fail2ban)
+ok: [web2] => (item=fail2ban)
+ok: [edge] => (item=fail2ban)
+ok: [db1] => (item=auditd)
+ok: [web1] => (item=auditd)
+ok: [web2] => (item=auditd)
+ok: [edge] => (item=auditd)
+ok: [db2] => (item=auditd)
+ok: [monitor] => (item=ssh)
+ok: [monitor] => (item=fail2ban)
+ok: [monitor] => (item=auditd)
+
+RUNNING HANDLER [security : Reload service definitions] ************************
+ok: [web1]
+ok: [web2]
+ok: [db1]
+ok: [edge]
+ok: [db2]
+ok: [monitor]
+
+PLAY RECAP *********************************************************************
+db1                        : ok=40   changed=2    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+db2                        : ok=30   changed=2    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+edge                       : ok=29   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+monitor                    : ok=42   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+web1                       : ok=32   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+web2                       : ok=32   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

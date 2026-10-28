@@ -1,0 +1,5 @@
+- name: Refresh service metrics
+  ansible.builtin.systemd_service:
+    name: ad10-service-metrics.service
+    daemon_reload: true
+    state: started

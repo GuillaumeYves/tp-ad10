@@ -101,12 +101,14 @@ ethernets:
       macaddress: '52:54:00:10:00:{suffix:02x}'
     dhcp4: true
     dhcp6: false
+    accept-ra: false
   lan:
     match:
       macaddress: '52:54:00:77:00:{suffix:02x}'
     addresses: [{machine['address']}/24]
     dhcp4: false
     dhcp6: false
+    accept-ra: false
     optional: true
 """)
     seed = folder / "seed.img"

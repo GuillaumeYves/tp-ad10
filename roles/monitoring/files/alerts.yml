@@ -16,3 +16,38 @@ groups:
           severity: critical
         annotations:
           summary: 'Exporteur indisponible sur {{ $labels.host }}'
+      - alert: ServiceUnavailable
+        expr: ad10_service_up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Service {{ $labels.service }} indisponible sur {{ $labels.host }}'
+      - alert: ReplicationUnavailable
+        expr: ad10_replica_io_running == 0 or ad10_replica_sql_running == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Réplication interrompue sur {{ $labels.host }}'
+      - alert: DatabaseUnavailable
+        expr: ad10_database_up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: 'MariaDB indisponible sur {{ $labels.host }}'
+      - alert: BackupTooOld
+        expr: time() - ad10_backup_last_success_timestamp_seconds > 90000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Sauvegarde absente ou trop ancienne sur {{ $labels.host }}'
+      - alert: ServiceCollectorStale
+        expr: time() - ad10_collection_timestamp_seconds > 90 or (up{job="nodes"} == 1 unless on(host) ad10_collection_timestamp_seconds)
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Collecteur de services absent ou figé sur {{ $labels.host }}'

@@ -1,0 +1,70 @@
+- name: Désactiver l'attente d'annonces IPv6 sur le réseau IPv4 du laboratoire
+  ansible.builtin.copy:
+    dest: /etc/netplan/99-ad10-lab.yaml
+    owner: root
+    group: root
+    mode: '0600'
+    content: |
+      network:
+        version: 2
+        ethernets:
+          wan:
+            accept-ra: false
+          lan:
+            accept-ra: false
+  notify: Generate lab network
+
+- name: Créer le répertoire de configuration de l'attente réseau
+  ansible.builtin.file:
+    path: /etc/systemd/system/systemd-networkd-wait-online.service.d
+    state: directory
+    mode: '0755'
+
+- name: Attendre explicitement la connectivité IPv4 du laboratoire
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/systemd-networkd-wait-online.service.d/99-ad10.conf
+    mode: '0644'
+    content: |
+      [Service]
+      ExecStart=
+      ExecStart=/usr/lib/systemd/systemd-networkd-wait-online --interface=ens3:routable --ipv4 --timeout=30
+      Environment=SYSTEMD_LOG_LEVEL=debug
+  notify: Reload service definitions
+
+- name: Installer les services de sécurité
+  ansible.builtin.apt:
+    name: [openssh-server, fail2ban, python3-systemd, auditd]
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  notify: Reload hardened SSH
+
+- name: Installer la configuration SSH validée
+  ansible.builtin.copy:
+    src: '{{ role_path }}/../../tp2/sshd_config'
+    dest: /etc/ssh/sshd_config
+    mode: '0600'
+    backup: true
+    validate: /usr/sbin/sshd -t -f %s
+  notify: Reload hardened SSH
+
+- name: Configurer la protection contre les tentatives SSH
+  ansible.builtin.copy:
+    src: '{{ role_path }}/../../tp2/sshd.local'
+    dest: /etc/fail2ban/jail.d/sshd.local
+    mode: '0644'
+  notify: Restart hardened Fail2ban
+
+- name: Installer la surveillance du fichier des comptes
+  ansible.builtin.copy:
+    src: '{{ role_path }}/../../tp2/passwd.rules'
+    dest: /etc/audit/rules.d/passwd.rules
+    mode: '0640'
+  notify: Load persistent audit rules
+
+- name: Activer les services de sécurité
+  ansible.builtin.service:
+    name: '{{ item }}'
+    state: started
+    enabled: true
+  loop: [ssh, fail2ban, auditd]

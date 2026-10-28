@@ -1,0 +1,35 @@
+service_map:
+  web1: [nginx, php8.3-fpm]
+  web2: [nginx, php8.3-fpm]
+  db1: [mariadb, cron]
+  db2: [mariadb]
+  edge: [haproxy]
+  monitor: [prometheus, prometheus-alertmanager, grafana-server, ad10-alert-receiver]
+
+public_ports:
+  web1: [22]
+  web2: [22]
+  db1: [22]
+  db2: [22]
+  edge: [22, 80, 443]
+  monitor: [22]
+
+trusted_ports:
+  web1:
+    - {sources: [192.168.77.20], ports: [80]}
+    - {sources: [192.168.77.50], ports: [9100]}
+  web2:
+    - {sources: [192.168.77.20], ports: [80]}
+    - {sources: [192.168.77.50], ports: [9100]}
+  db1:
+    - {sources: [192.168.77.20, 192.168.77.32], ports: [3306]}
+    - {sources: [192.168.77.50], ports: [9100]}
+  db2:
+    - {sources: [192.168.77.20, 192.168.77.31], ports: [3306]}
+    - {sources: [192.168.77.50], ports: [9100]}
+  edge:
+    - {sources: [192.168.77.21, 192.168.77.22], ports: [3306, 3307]}
+    - {sources: [192.168.77.50], ports: [9100]}
+  monitor:
+    - {sources: [10.0.2.2], ports: [3000, 9090, 9093]}
+    - {sources: [192.168.77.50], ports: [9100]}

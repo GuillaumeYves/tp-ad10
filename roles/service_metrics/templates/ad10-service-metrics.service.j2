@@ -1,0 +1,10 @@
+[Unit]
+Description=Collecte des métriques de service AD10
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/ad10-service-metrics{% for service in monitored_services %} --service {{ service }}{% endfor %}{% if inventory_hostname in groups['database'] %} --database{% endif %}{% if inventory_hostname == 'db2' %} --replica{% endif %}{% if inventory_hostname == 'db1' %} --backup{% endif %}
+
+NoNewPrivileges=true
+ProtectHome=true

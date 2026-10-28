@@ -1,0 +1,320 @@
+2026-10-28T09:27:36Z
+Réponses HTTPS : {'web2': 6, 'web1': 6}
+PASS : HTTPS vérifié avec le certificat local et répartition sur les deux serveurs.
+$ alice@edge: sudo sshd -T | grep -E "^(allowusers|permitrootlogin|passwordauthentication|authenticationmethods) "; systemctl is-active nftables fail2ban auditd; sudo auditctl -l
+permitrootlogin no
+passwordauthentication no
+allowusers alice
+authenticationmethods publickey
+active
+active
+active
+-w /etc/passwd -p rwa -k passwd_watch
+
+$ root@edge: true
+root@127.0.0.1: Permission denied (publickey).
+
+$ labadmin@edge: true
+labadmin@127.0.0.1: Permission denied (publickey).
+
+$ alice@edge: sudo nft list ruleset
+table inet filter {
+	chain input {
+		type filter hook input priority filter; policy drop;
+		iifname "lo" accept
+		ct state invalid drop
+		ct state established,related accept
+		iifname "ens3" udp sport 67 udp dport 68 accept
+		tcp dport { 22, 80, 443 } ct state new counter packets 115 bytes 5060 accept
+		ip saddr { 192.168.77.21, 192.168.77.22 } tcp dport { 3306, 3307 } ct state new counter packets 96 bytes 5760 accept
+		ip saddr 192.168.77.50 tcp dport 9100 ct state new counter packets 1 bytes 60 accept
+		counter packets 4 bytes 384 drop
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy drop;
+	}
+
+	chain output {
+		type filter hook output priority filter; policy accept;
+	}
+}
+
+$ alice@web1: sudo sshd -T | grep -E "^(allowusers|permitrootlogin|passwordauthentication|authenticationmethods) "; systemctl is-active nftables fail2ban auditd; sudo auditctl -l
+permitrootlogin no
+passwordauthentication no
+allowusers alice
+authenticationmethods publickey
+active
+active
+active
+-w /etc/passwd -p rwa -k passwd_watch
+
+$ root@web1: true
+root@127.0.0.1: Permission denied (publickey).
+
+$ labadmin@web1: true
+labadmin@127.0.0.1: Permission denied (publickey).
+
+$ alice@web1: sudo nft list ruleset
+table inet filter {
+	chain input {
+		type filter hook input priority filter; policy drop;
+		iifname "lo" accept
+		ct state invalid drop
+		ct state established,related accept
+		iifname "ens3" udp sport 67 udp dport 68 accept
+		tcp dport 22 ct state new counter packets 51 bytes 2244 accept
+		ip saddr 192.168.77.20 tcp dport 80 ct state new counter packets 280 bytes 16800 accept
+		ip saddr 192.168.77.50 tcp dport 9100 ct state new counter packets 10 bytes 600 accept
+		counter packets 1 bytes 72 drop
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy drop;
+	}
+
+	chain output {
+		type filter hook output priority filter; policy accept;
+	}
+}
+
+$ alice@web2: sudo sshd -T | grep -E "^(allowusers|permitrootlogin|passwordauthentication|authenticationmethods) "; systemctl is-active nftables fail2ban auditd; sudo auditctl -l
+permitrootlogin no
+passwordauthentication no
+allowusers alice
+authenticationmethods publickey
+active
+active
+active
+-w /etc/passwd -p rwa -k passwd_watch
+
+$ root@web2: true
+root@127.0.0.1: Permission denied (publickey).
+
+$ labadmin@web2: true
+labadmin@127.0.0.1: Permission denied (publickey).
+
+$ alice@web2: sudo nft list ruleset
+table inet filter {
+	chain input {
+		type filter hook input priority filter; policy drop;
+		iifname "lo" accept
+		ct state invalid drop
+		ct state established,related accept
+		iifname "ens3" udp sport 67 udp dport 68 accept
+		tcp dport 22 ct state new counter packets 16 bytes 704 accept
+		ip saddr 192.168.77.20 tcp dport 80 ct state new counter packets 1206 bytes 72360 accept
+		ip saddr 192.168.77.50 tcp dport 9100 ct state new counter packets 1 bytes 60 accept
+		counter packets 3 bytes 288 drop
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy drop;
+	}
+
+	chain output {
+		type filter hook output priority filter; policy accept;
+	}
+}
+
+$ alice@db1: sudo sshd -T | grep -E "^(allowusers|permitrootlogin|passwordauthentication|authenticationmethods) "; systemctl is-active nftables fail2ban auditd; sudo auditctl -l
+permitrootlogin no
+passwordauthentication no
+allowusers alice
+authenticationmethods publickey
+active
+active
+active
+-w /etc/passwd -p rwa -k passwd_watch
+
+$ root@db1: true
+root@127.0.0.1: Permission denied (publickey).
+
+$ labadmin@db1: true
+labadmin@127.0.0.1: Permission denied (publickey).
+
+$ alice@db1: sudo nft list ruleset
+table inet filter {
+	chain input {
+		type filter hook input priority filter; policy drop;
+		iifname "lo" accept
+		ct state invalid drop
+		ct state established,related accept
+		iifname "ens3" udp sport 67 udp dport 68 accept
+		tcp dport 22 ct state new counter packets 24 bytes 1088 accept
+		ip saddr { 192.168.77.20, 192.168.77.32 } tcp dport 3306 ct state new counter packets 2395 bytes 143700 accept
+		ip saddr 192.168.77.50 tcp dport 9100 ct state new counter packets 1 bytes 60 accept
+		counter packets 8 bytes 624 drop
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy drop;
+	}
+
+	chain output {
+		type filter hook output priority filter; policy accept;
+	}
+}
+
+$ alice@db2: sudo sshd -T | grep -E "^(allowusers|permitrootlogin|passwordauthentication|authenticationmethods) "; systemctl is-active nftables fail2ban auditd; sudo auditctl -l
+permitrootlogin no
+passwordauthentication no
+allowusers alice
+authenticationmethods publickey
+active
+active
+active
+-w /etc/passwd -p rwa -k passwd_watch
+
+$ root@db2: true
+root@127.0.0.1: Permission denied (publickey).
+
+$ labadmin@db2: true
+labadmin@127.0.0.1: Permission denied (publickey).
+
+$ alice@db2: sudo nft list ruleset
+table inet filter {
+	chain input {
+		type filter hook input priority filter; policy drop;
+		iifname "lo" accept
+		ct state invalid drop
+		ct state established,related accept
+		iifname "ens3" udp sport 67 udp dport 68 accept
+		tcp dport 22 ct state new counter packets 16 bytes 704 accept
+		ip saddr { 192.168.77.20, 192.168.77.31 } tcp dport 3306 ct state new counter packets 1053 bytes 63180 accept
+		ip saddr 192.168.77.50 tcp dport 9100 ct state new counter packets 1 bytes 60 accept
+		counter packets 3 bytes 288 drop
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy drop;
+	}
+
+	chain output {
+		type filter hook output priority filter; policy accept;
+	}
+}
+
+$ alice@monitor: sudo sshd -T | grep -E "^(allowusers|permitrootlogin|passwordauthentication|authenticationmethods) "; systemctl is-active nftables fail2ban auditd; sudo auditctl -l
+permitrootlogin no
+passwordauthentication no
+allowusers alice
+authenticationmethods publickey
+active
+active
+active
+-w /etc/passwd -p rwa -k passwd_watch
+
+$ root@monitor: true
+root@127.0.0.1: Permission denied (publickey).
+
+$ labadmin@monitor: true
+labadmin@127.0.0.1: Permission denied (publickey).
+
+$ alice@monitor: sudo nft list ruleset
+table inet filter {
+	chain input {
+		type filter hook input priority filter; policy drop;
+		iifname "lo" accept
+		ct state invalid drop
+		ct state established,related accept
+		iifname "ens3" udp sport 67 udp dport 68 accept
+		tcp dport 22 ct state new counter packets 18 bytes 792 accept
+		ip saddr 10.0.2.2 tcp dport { 3000, 9090, 9093 } ct state new counter packets 16 bytes 704 accept
+		ip saddr 192.168.77.50 tcp dport 9100 ct state new counter packets 0 bytes 0 accept
+		counter packets 4 bytes 384 drop
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy drop;
+	}
+
+	chain output {
+		type filter hook output priority filter; policy accept;
+	}
+}
+
+PASS : Alice seule autorisée en SSH, pare-feu et services de sécurité actifs sur six VM.
+$ labadmin@tp1-admin: python3 -c 'import socket
+results={}
+for port in [22, 80, 9100]:
+ s=socket.socket(); s.settimeout(2); results[port]=s.connect_ex(('"'"'192.168.77.21'"'"',port))==0; s.close()
+print(results)
+assert results == {22: True, 80: False, 9100: False}
+'
+{22: True, 80: False, 9100: False}
+
+$ labadmin@tp1-admin: python3 -c 'import socket
+results={}
+for port in [22, 3306]:
+ s=socket.socket(); s.settimeout(2); results[port]=s.connect_ex(('"'"'192.168.77.31'"'"',port))==0; s.close()
+print(results)
+assert results == {22: True, 3306: False}
+'
+{22: True, 3306: False}
+
+$ alice@edge: python3 -c 'import socket
+results={}
+for port in [80]:
+ s=socket.socket(); s.settimeout(2); results[port]=s.connect_ex(('"'"'192.168.77.21'"'"',port))==0; s.close()
+print(results)
+assert results == {80: True}
+'
+{80: True}
+
+$ alice@web1: python3 -c 'import socket
+results={}
+for port in [3306, 3307]:
+ s=socket.socket(); s.settimeout(2); results[port]=s.connect_ex(('"'"'192.168.77.20'"'"',port))==0; s.close()
+print(results)
+assert results == {3306: True, 3307: True}
+'
+{3306: True, 3307: True}
+
+$ alice@monitor: python3 -c 'import socket
+results={}
+for port in [9100]:
+ s=socket.socket(); s.settimeout(2); results[port]=s.connect_ex(('"'"'192.168.77.21'"'"',port))==0; s.close()
+print(results)
+assert results == {9100: True}
+'
+{9100: True}
+
+PASS : les flux autorisés passent ; les autres sources sont filtrées.
+$ alice@db1: sudo bash -s
+Sauvegarde créée : /backup/shop-20261028T092748787277531Z.sql.gz
+Archive : /backup/shop-20261028T092748787277531Z.sql.gz
+Sommes de contrôle identiques : 272152217.
+restored_products
+2
+PASS : sauvegarde et restauration dans une base distincte.
+
+$ alice@web1: sudo systemctl stop nginx
+
+Réponses HTTPS : {'web2': 8}
+PASS : service HTTPS disponible pendant l’arrêt de web1.
+$ alice@web1: sudo systemctl start nginx
+
+$ alice@db1: sudo systemctl stop mariadb
+
+Réponses HTTPS : {'web2': 4, 'web1': 4}
+PASS : lectures HTTPS maintenues sur db2 pendant la panne du primaire.
+$ alice@db1: sudo systemctl start mariadb
+
+$ alice@web1: sudo reboot
+
+status: done
+$ alice@web1: systemctl is-active nginx php8.3-fpm nftables fail2ban auditd prometheus-node-exporter ad10-service-metrics.timer; systemctl is-active systemd-networkd-wait-online
+active
+active
+active
+active
+active
+active
+active
+active
+
+Réponses HTTPS : {'web2': 6, 'web1': 6}
+PASS : services, accès SSH et pare-feu persistants après redémarrage de web1.
+PASS : six VM et leurs services supervisés, réplication rétablie et sauvegarde visible.

@@ -1,0 +1,4 @@
+- name: Préparer le compte d'administration du cluster
+  hosts: cluster:monitoring
+  become: true
+  roles: [administrator]

@@ -14,6 +14,13 @@ defaults
 frontend web_front
     mode http
     bind *:80
+{% if loadbalancer_tls_enabled %}
+    http-request redirect prefix {{ loadbalancer_public_url }} code 301
+
+frontend web_secure
+    mode http
+    bind *:443 ssl crt /etc/haproxy/certs/edge.pem ssl-min-ver TLSv1.2
+{% endif %}
     default_backend web_pool
 
 backend web_pool

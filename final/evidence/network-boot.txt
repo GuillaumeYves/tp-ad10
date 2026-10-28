@@ -1,0 +1,14 @@
+Oct 28 09:28:07 web1 systemd[1]: Starting systemd-networkd-wait-online.service - Wait for Network to be Configured...
+Oct 28 09:28:07 web1 systemd-networkd-wait-online[410]: Found link lo(1)
+Oct 28 09:28:07 web1 systemd-networkd-wait-online[410]: Found link ens3(2)
+Oct 28 09:28:07 web1 systemd-networkd-wait-online[410]: Found link ens4(3)
+Oct 28 09:28:07 web1 systemd-networkd-wait-online[410]: ens3: link is being processed by networkd: setup state is configuring.
+Oct 28 09:28:07 web1 systemd-networkd-wait-online[410]: ens3: link is being processed by networkd: setup state is configuring.
+Oct 28 09:28:07 web1 systemd-networkd-wait-online[410]: ens3: link is being processed by networkd: setup state is configuring.
+Oct 28 09:28:07 web1 systemd-networkd-wait-online[410]: ens3: link is being processed by networkd: setup state is configuring.
+Oct 28 09:28:07 web1 systemd-networkd-wait-online[410]: ens3: link is being processed by networkd: setup state is configuring.
+Oct 28 09:28:09 web1 systemd-networkd-wait-online[410]: ens3: link is being processed by networkd: setup state is configuring.
+Oct 28 09:28:09 web1 systemd-networkd-wait-online[410]: ens3: link is configured by networkd and online.
+Oct 28 09:28:09 web1 systemd[1]: Finished systemd-networkd-wait-online.service - Wait for Network to be Configured.
+Startup finished in 1.168s (kernel) + 6.010s (userspace) = 7.178s 
+graphical.target reached after 5.402s in userspace.
