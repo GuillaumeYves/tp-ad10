@@ -1,0 +1,26 @@
+#!/usr/sbin/nft -f
+flush ruleset
+
+table inet filter {
+    chain input {
+        type filter hook input priority filter; policy drop;
+        iifname "lo" accept
+        ct state invalid drop
+        ct state established,related accept
+        # Préserver le DHCP de la carte de sortie.
+        iifname "ens3" udp sport 67 udp dport 68 accept
+{% if firewall_public_tcp_ports | length > 0 %}
+        tcp dport { {{ firewall_public_tcp_ports | join(', ') }} } ct state new counter accept
+{% endif %}
+{% for rule in firewall_trusted_tcp_rules %}
+        ip saddr { {{ rule.sources | join(', ') }} } tcp dport { {{ rule.ports | join(', ') }} } ct state new counter accept
+{% endfor %}
+        counter drop
+    }
+    chain forward {
+        type filter hook forward priority filter; policy drop;
+    }
+    chain output {
+        type filter hook output priority filter; policy accept;
+    }
+}

@@ -1,0 +1,10 @@
+- name: Validate static Nginx
+  listen: Reload static site
+  ansible.builtin.command: nginx -t
+  changed_when: false
+
+- name: Reload static Nginx
+  listen: Reload static site
+  ansible.builtin.service:
+    name: nginx
+    state: reloaded

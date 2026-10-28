@@ -1,0 +1,10 @@
+- name: Apply firewall
+  ansible.builtin.command: /usr/sbin/nft -f /etc/nftables.conf
+  changed_when: true
+  notify: Restore Fail2ban rules
+
+- name: Restore Fail2ban rules
+  ansible.builtin.service:
+    name: fail2ban
+    state: restarted
+  when: "'fail2ban.service' in ansible_facts.services"

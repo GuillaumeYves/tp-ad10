@@ -1,0 +1,23 @@
+- name: Installer nftables
+  ansible.builtin.apt:
+    name: nftables
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Recenser les services installés
+  ansible.builtin.service_facts:
+
+- name: Déployer et valider les règles du pare-feu
+  ansible.builtin.template:
+    src: nftables.conf.j2
+    dest: /etc/nftables.conf
+    mode: '0644'
+    validate: /usr/sbin/nft -c -f %s
+  notify: Apply firewall
+
+- name: Activer le pare-feu au démarrage
+  ansible.builtin.service:
+    name: nftables
+    enabled: true
+    state: started

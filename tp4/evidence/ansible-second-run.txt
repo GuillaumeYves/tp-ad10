@@ -1,0 +1,55 @@
+
+PLAY [Installer les serveurs web et leur pare-feu] *****************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [tp4-web1]
+ok: [tp4-web2]
+
+TASK [static_web : Installer Nginx] ********************************************
+ok: [tp4-web1]
+ok: [tp4-web2]
+
+TASK [static_web : Créer le répertoire web] ************************************
+ok: [tp4-web2]
+ok: [tp4-web1]
+
+TASK [static_web : Déployer la page HTML] **************************************
+ok: [tp4-web1]
+ok: [tp4-web2]
+
+TASK [static_web : Configurer le site] *****************************************
+ok: [tp4-web1]
+ok: [tp4-web2]
+
+TASK [static_web : Activer le site] ********************************************
+ok: [tp4-web2]
+ok: [tp4-web1]
+
+TASK [static_web : Retirer le site par défaut] *********************************
+ok: [tp4-web1]
+ok: [tp4-web2]
+
+TASK [static_web : Démarrer et activer Nginx] **********************************
+ok: [tp4-web1]
+ok: [tp4-web2]
+
+TASK [firewall : Installer nftables] *******************************************
+ok: [tp4-web2]
+ok: [tp4-web1]
+
+TASK [firewall : Recenser les services installés] ******************************
+ok: [tp4-web1]
+ok: [tp4-web2]
+
+TASK [firewall : Déployer et valider les règles du pare-feu] *******************
+ok: [tp4-web1]
+ok: [tp4-web2]
+
+TASK [firewall : Activer le pare-feu au démarrage] *****************************
+ok: [tp4-web1]
+ok: [tp4-web2]
+
+PLAY RECAP *********************************************************************
+tp4-web1                   : ok=12   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+tp4-web2                   : ok=12   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

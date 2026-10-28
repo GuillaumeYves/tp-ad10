@@ -1,0 +1,8 @@
+server {
+    listen 80 default_server;
+    server_name _;
+    root /var/www/ad10-static;
+    index index.html;
+    server_tokens off;
+    add_header X-Backend {{ inventory_hostname }} always;
+}

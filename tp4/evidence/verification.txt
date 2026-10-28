@@ -1,0 +1,52 @@
+=== tp4-web1 ===
+table inet filter {
+	chain input {
+		type filter hook input priority filter; policy drop;
+		iifname "lo" accept
+		ct state invalid drop
+		ct state established,related accept
+		iifname "ens3" udp sport 67 udp dport 68 accept
+		tcp dport { 22, 80 } ct state new counter packets 2 bytes 88 accept
+		counter packets 0 bytes 0 drop
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy drop;
+	}
+
+	chain output {
+		type filter hook output priority filter; policy accept;
+	}
+}
+active
+active
+enabled
+enabled
+
+PASS : tp4-web1 répond, les services sont persistants et la seconde exécution ne change rien.
+=== tp4-web2 ===
+table inet filter {
+	chain input {
+		type filter hook input priority filter; policy drop;
+		iifname "lo" accept
+		ct state invalid drop
+		ct state established,related accept
+		iifname "ens3" udp sport 67 udp dport 68 accept
+		tcp dport { 22, 80 } ct state new counter packets 2 bytes 88 accept
+		counter packets 0 bytes 0 drop
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy drop;
+	}
+
+	chain output {
+		type filter hook output priority filter; policy accept;
+	}
+}
+active
+active
+enabled
+enabled
+
+PASS : tp4-web2 répond, les services sont persistants et la seconde exécution ne change rien.

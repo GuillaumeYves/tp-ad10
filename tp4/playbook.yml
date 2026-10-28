@@ -1,0 +1,8 @@
+- name: Installer les serveurs web et leur pare-feu
+  hosts: automation
+  become: true
+  vars:
+    firewall_public_tcp_ports: [22, 80]
+  roles:
+    - static_web
+    - firewall

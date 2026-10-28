@@ -1,0 +1,2 @@
+firewall_public_tcp_ports: [22]
+firewall_trusted_tcp_rules: []

@@ -1,0 +1,44 @@
+- name: Installer Nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Créer le répertoire web
+  ansible.builtin.file:
+    path: /var/www/ad10-static
+    state: directory
+    mode: '0755'
+
+- name: Déployer la page HTML
+  ansible.builtin.copy:
+    src: '{{ playbook_dir }}/index.html'
+    dest: /var/www/ad10-static/index.html
+    mode: '0644'
+
+- name: Configurer le site
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/ad10-static
+    mode: '0644'
+  notify: Reload static site
+
+- name: Activer le site
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/ad10-static
+    dest: /etc/nginx/sites-enabled/ad10-static
+    state: link
+  notify: Reload static site
+
+- name: Retirer le site par défaut
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload static site
+
+- name: Démarrer et activer Nginx
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true
