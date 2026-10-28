@@ -1,0 +1,6 @@
+# Conserver les sorties brutes des commandes.
+**/evidence/*.txt -whitespace
+*.sh text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+*.conf text eol=lf

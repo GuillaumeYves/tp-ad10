@@ -25,6 +25,15 @@ python3 lab/manage.py start tp1-admin
 python3 lab/manage.py ssh tp1-admin
 ```
 
+Pour l'automatisation et les captures :
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/playwright install firefox
+sudo .venv/bin/playwright install-deps firefox
+```
+
 Les disques, clés privées et journaux de démarrage restent dans `.lab/`, exclu de Git. Les redirections de ports écoutent uniquement sur `127.0.0.1`. Le réseau privé des VM utilise `192.168.77.0/24` sur une seconde carte virtuelle.
 
 L'image officielle est téléchargée avec vérification SHA-256. Sources : [images Ubuntu Minimal](https://cloud-images.ubuntu.com/minimal/releases/noble/release/), [documentation QEMU](https://www.qemu.org/docs/master/system/invocation.html).
