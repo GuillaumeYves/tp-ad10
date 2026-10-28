@@ -1,0 +1,58 @@
+- name: Installer Nginx et PHP
+  ansible.builtin.apt:
+    name: [nginx, php8.3-fpm, php8.3-mysql]
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Créer le répertoire du site
+  ansible.builtin.file:
+    path: /var/www/ad10
+    state: directory
+    owner: root
+    group: www-data
+    mode: '0755'
+
+- name: Déployer la page de test
+  ansible.builtin.copy:
+    src: index.php
+    dest: /var/www/ad10/index.php
+    owner: root
+    group: www-data
+    mode: '0644'
+
+- name: Déployer la configuration applicative hors du site
+  ansible.builtin.template:
+    src: app.php.j2
+    dest: /etc/ad10-app.php
+    owner: root
+    group: www-data
+    mode: '0640'
+  no_log: true
+
+- name: Configurer Nginx
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/ad10
+    mode: '0644'
+  notify: Reload Nginx
+
+- name: Retirer le site par défaut
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload Nginx
+
+- name: Activer le site
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/ad10
+    dest: /etc/nginx/sites-enabled/ad10
+    state: link
+  notify: Reload Nginx
+
+- name: Activer les services web
+  ansible.builtin.service:
+    name: '{{ item }}'
+    state: started
+    enabled: true
+  loop: [nginx, php8.3-fpm]

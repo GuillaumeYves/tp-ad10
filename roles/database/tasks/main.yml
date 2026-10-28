@@ -1,0 +1,32 @@
+- name: Installer MariaDB et son connecteur Python
+  ansible.builtin.apt:
+    name: [mariadb-server, python3-pymysql]
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Créer le répertoire des journaux binaires
+  ansible.builtin.file:
+    path: /var/log/mysql
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: '0750'
+
+- name: Configurer le serveur de base de données
+  ansible.builtin.template:
+    src: mariadb.cnf.j2
+    dest: /etc/mysql/mariadb.conf.d/60-ad10.cnf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart MariaDB
+
+- name: Activer MariaDB
+  ansible.builtin.service:
+    name: mariadb
+    enabled: true
+    state: started
+
+- name: Appliquer la configuration avant la réplication
+  ansible.builtin.meta: flush_handlers

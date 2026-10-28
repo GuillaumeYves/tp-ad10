@@ -1,0 +1,28 @@
+# Site du cluster.
+server {
+    listen 80 default_server;
+    server_name _;
+    root /var/www/ad10;
+    index index.php;
+    server_tokens off;
+    add_header X-Backend {{ inventory_hostname }} always;
+
+    location = /health {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+    }
+
+    location ~ /\. {
+        deny all;
+    }
+}

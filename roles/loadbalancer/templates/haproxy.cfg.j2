@@ -1,0 +1,47 @@
+global
+    log /dev/log local0
+    user haproxy
+    group haproxy
+    daemon
+    stats socket /run/haproxy/admin.sock mode 660 level admin
+
+defaults
+    log global
+    timeout connect 3s
+    timeout client 30s
+    timeout server 30s
+
+frontend web_front
+    mode http
+    bind *:80
+    default_backend web_pool
+
+backend web_pool
+    mode http
+    balance roundrobin
+    option httpchk GET /health
+    http-check expect status 200
+{% for host in groups['web'] %}
+    server {{ host }} {{ hostvars[host].private_address }}:80 check inter 1s fall 2 rise 2
+{% endfor %}
+
+frontend database_write
+    mode tcp
+    bind {{ private_address }}:3306
+    default_backend database_primary
+
+backend database_primary
+    mode tcp
+    option tcp-check
+    server {{ database_primary }} {{ hostvars[database_primary].private_address }}:3306 check inter 1s fall 2 rise 2
+
+frontend database_read
+    mode tcp
+    bind {{ private_address }}:3307
+    default_backend database_readers
+
+backend database_readers
+    mode tcp
+    option tcp-check
+    server {{ database_primary }} {{ hostvars[database_primary].private_address }}:3306 check inter 1s fall 2 rise 2
+    server {{ database_replica }} {{ hostvars[database_replica].private_address }}:3306 check backup inter 1s fall 2 rise 2

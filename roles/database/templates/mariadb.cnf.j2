@@ -1,0 +1,11 @@
+[mariadb]
+bind-address = {{ private_address }}
+server-id = {{ server_id }}
+log-bin = /var/log/mysql/mariadb-bin
+log-basename = {{ inventory_hostname }}
+binlog-format = ROW
+log-slave-updates = ON
+gtid-strict-mode = ON
+read-only = {{ 'OFF' if inventory_hostname == database_primary else 'ON' }}
+expire-logs-days = 7
+skip-name-resolve = ON

@@ -1,0 +1,103 @@
+- name: Installer les serveurs de base de données
+  hosts: database
+  become: true
+  vars_files: [../.lab/secrets.json]
+  vars:
+    database_primary: db1
+    database_replica: db2
+  roles: [database]
+
+- name: Préparer le compte de réplication
+  hosts: db1
+  become: true
+  vars_files: [../.lab/secrets.json]
+  tasks:
+    - name: Créer le compte de réplication limité à la réplique
+      ansible.mysql.mysql_user:
+        login_unix_socket: /run/mysqld/mysqld.sock
+        name: replication
+        host: '{{ hostvars["db2"].private_address }}'
+        password: '{{ replication_password }}'
+        priv: '*.*:REPLICATION SLAVE'
+        state: present
+      no_log: true
+
+- name: Activer la réplication
+  hosts: db2
+  become: true
+  vars_files: [../.lab/secrets.json]
+  tasks:
+    - name: Examiner la réplication existante
+      ansible.mysql.mysql_replication:
+        login_unix_socket: /run/mysqld/mysqld.sock
+        mode: getreplica
+      register: replica_status
+
+    - name: Configurer la source sur une réplique neuve
+      ansible.mysql.mysql_replication:
+        login_unix_socket: /run/mysqld/mysqld.sock
+        mode: changeprimary
+        primary_host: '{{ hostvars["db1"].private_address }}'
+        primary_user: replication
+        primary_password: '{{ replication_password }}'
+        primary_use_gtid: replica_pos
+      when: not replica_status.Is_Replica
+      no_log: true
+
+    - name: Démarrer la réplication
+      ansible.mysql.mysql_replication:
+        login_unix_socket: /run/mysqld/mysqld.sock
+        mode: startreplica
+      when: not replica_status.Is_Replica or replica_status.Slave_IO_Running != 'Yes' or replica_status.Slave_SQL_Running != 'Yes'
+
+- name: Créer la base et les données applicatives
+  hosts: db1
+  become: true
+  vars_files: [../.lab/secrets.json]
+  tasks:
+    - name: Créer la base shop
+      ansible.mysql.mysql_db:
+        login_unix_socket: /run/mysqld/mysqld.sock
+        name: shop
+        encoding: utf8mb4
+        state: present
+
+    - name: Autoriser le compte applicatif depuis le proxy
+      ansible.mysql.mysql_user:
+        login_unix_socket: /run/mysqld/mysqld.sock
+        name: shop_app
+        host: '{{ hostvars["edge"].private_address }}'
+        password: '{{ db_password }}'
+        priv: 'shop.*:SELECT,INSERT,UPDATE'
+        state: present
+      no_log: true
+
+    - name: Vérifier la présence du catalogue
+      ansible.mysql.mysql_query:
+        login_unix_socket: /run/mysqld/mysqld.sock
+        query: SELECT COUNT(*) AS count FROM information_schema.tables WHERE table_schema='shop' AND table_name='products'
+      register: catalog_status
+      changed_when: false
+
+    - name: Initialiser le catalogue neuf
+      ansible.mysql.mysql_query:
+        login_unix_socket: /run/mysqld/mysqld.sock
+        login_db: shop
+        query:
+          - CREATE TABLE products (id INT PRIMARY KEY, name VARCHAR(120) NOT NULL, price DECIMAL(10,2) NOT NULL)
+          - INSERT INTO products VALUES (1, 'Clavier', 49.90), (2, 'Souris', 24.90)
+      when: catalog_status.query_result[0][0].count | int == 0
+
+- name: Déployer les serveurs web
+  hosts: web
+  become: true
+  vars_files: [../.lab/secrets.json]
+  roles: [web]
+
+- name: Déployer le répartiteur de charge
+  hosts: loadbalancer
+  become: true
+  vars:
+    database_primary: db1
+    database_replica: db2
+  roles: [loadbalancer]

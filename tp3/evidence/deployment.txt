@@ -1,0 +1,136 @@
+
+PLAY [Installer les serveurs de base de données] *******************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [db2]
+ok: [db1]
+
+TASK [database : Installer MariaDB et son connecteur Python] *******************
+ok: [db1]
+ok: [db2]
+
+TASK [database : Créer le répertoire des journaux binaires] ********************
+ok: [db1]
+ok: [db2]
+
+TASK [database : Configurer le serveur de base de données] *********************
+ok: [db2]
+ok: [db1]
+
+TASK [database : Activer MariaDB] **********************************************
+ok: [db1]
+ok: [db2]
+
+TASK [database : Appliquer la configuration avant la réplication] **************
+
+TASK [database : Appliquer la configuration avant la réplication] **************
+
+PLAY [Préparer le compte de réplication] ***************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [db1]
+
+TASK [Créer le compte de réplication limité à la réplique] *********************
+[WARNING]: MariaDB has been detected: its support will be dropped in 6.0.0. For MariaDB automation, please use the ansible.mariadb collection instead.
+ok: [db1]
+
+PLAY [Activer la réplication] **************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [db2]
+
+TASK [Examiner la réplication existante] ***************************************
+ok: [db2]
+
+TASK [Configurer la source sur une réplique neuve] *****************************
+skipping: [db2]
+
+TASK [Démarrer la réplication] *************************************************
+changed: [db2]
+
+PLAY [Créer la base et les données applicatives] *******************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [db1]
+
+TASK [Créer la base shop] ******************************************************
+ok: [db1]
+
+TASK [Autoriser le compte applicatif depuis le proxy] **************************
+ok: [db1]
+
+TASK [Vérifier la présence du catalogue] ***************************************
+ok: [db1]
+
+TASK [Initialiser le catalogue neuf] *******************************************
+skipping: [db1]
+
+PLAY [Déployer les serveurs web] ***********************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [web1]
+ok: [web2]
+
+TASK [web : Installer Nginx et PHP] ********************************************
+ok: [web2]
+ok: [web1]
+
+TASK [web : Créer le répertoire du site] ***************************************
+ok: [web2]
+ok: [web1]
+
+TASK [web : Déployer la page de test] ******************************************
+ok: [web1]
+ok: [web2]
+
+TASK [web : Déployer la configuration applicative hors du site] ****************
+ok: [web2]
+ok: [web1]
+
+TASK [web : Configurer Nginx] **************************************************
+changed: [web2]
+changed: [web1]
+
+TASK [web : Retirer le site par défaut] ****************************************
+ok: [web1]
+ok: [web2]
+
+TASK [web : Activer le site] ***************************************************
+ok: [web1]
+ok: [web2]
+
+TASK [web : Activer les services web] ******************************************
+ok: [web1] => (item=nginx)
+ok: [web2] => (item=nginx)
+ok: [web1] => (item=php8.3-fpm)
+ok: [web2] => (item=php8.3-fpm)
+
+RUNNING HANDLER [web : Validate Nginx configuration] ***************************
+ok: [web1]
+ok: [web2]
+
+RUNNING HANDLER [web : Apply Nginx reload] *************************************
+changed: [web1]
+changed: [web2]
+
+PLAY [Déployer le répartiteur de charge] ***************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [edge]
+
+TASK [loadbalancer : Installer HAProxy] ****************************************
+ok: [edge]
+
+TASK [loadbalancer : Déployer la configuration HAProxy] ************************
+ok: [edge]
+
+TASK [loadbalancer : Activer HAProxy] ******************************************
+ok: [edge]
+
+PLAY RECAP *********************************************************************
+db1                        : ok=11   changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+db2                        : ok=8    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+edge                       : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+web1                       : ok=11   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+web2                       : ok=11   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
