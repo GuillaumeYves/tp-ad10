@@ -1,0 +1,2 @@
+# Journaliser les lectures, écritures et changements d'attributs.
+-w /etc/passwd -p rwa -k passwd_watch

@@ -1,0 +1,157 @@
+$ alice@tp2-security: sudo bash -s
+=== Système ===
+2026-10-28T08:43:47+00:00
+ Static hostname: tp2-security
+       Icon name: computer-vm
+         Chassis: vm 🖴
+      Machine ID: de1edb0433dd4cb68abdb2374fdaa8dd
+         Boot ID: a557e9e665764ea6967a406338b739ee
+  Virtualization: kvm
+Operating System: Ubuntu 24.04.5 LTS
+          Kernel: Linux 6.8.0-147-generic
+    Architecture: x86-64
+ Hardware Vendor: QEMU
+  Hardware Model: Ubuntu 24.04 PC v2 _i440FX + PIIX, arch_caps fix, 1996_
+Firmware Version: 1.16.3-debian-1.16.3-2
+   Firmware Date: Tue 2014-04-01
+    Firmware Age: 12y 6month 3w 6d
+
+=== Configuration SSH effective ===
+permitrootlogin no
+pubkeyauthentication yes
+passwordauthentication no
+kbdinteractiveauthentication no
+allowusers alice
+authenticationmethods publickey
+
+=== Pare-feu ===
+table inet filter {
+	chain input {
+		type filter hook input priority filter; policy drop;
+		iifname "lo" accept
+		ct state invalid drop
+		ct state established,related accept
+		iifname "ens3" udp sport 67 udp dport 68 accept
+		tcp dport { 22, 80, 443 } ct state new counter packets 6 bytes 264 accept
+		counter packets 0 bytes 0 drop
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy drop;
+	}
+
+	chain output {
+		type filter hook output priority filter; policy accept;
+	}
+}
+
+=== Fail2ban ===
+Status for the jail: sshd
+|- Filter
+|  |- Currently failed:	0
+|  |- Total failed:	0
+|  `- Journal matches:	_SYSTEMD_UNIT=sshd.service + _COMM=sshd
+`- Actions
+   |- Currently banned:	0
+   |- Total banned:	0
+   `- Banned IP list:	
+
+=== Audit ===
+-w /etc/passwd -p rwa -k passwd_watch
+----
+type=PROCTITLE msg=audit(10/28/26 08:42:43.666:445) : proctitle=cat /etc/passwd 
+type=PATH msg=audit(10/28/26 08:42:43.666:445) : item=0 name=/etc/passwd inode=17346 dev=fd:01 mode=file,644 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0 
+type=CWD msg=audit(10/28/26 08:42:43.666:445) : cwd=/home/alice 
+type=SYSCALL msg=audit(10/28/26 08:42:43.666:445) : arch=x86_64 syscall=openat success=yes exit=3 a0=AT_FDCWD a1=0x7ffd96f95ea8 a2=O_RDONLY a3=0x0 items=1 ppid=1883 pid=1894 auid=alice uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=(none) ses=9 comm=cat exe=/usr/bin/cat subj=unconfined key=passwd_watch 
+----
+type=PROCTITLE msg=audit(10/28/26 08:43:47.754:749) : proctitle=cat /etc/passwd 
+type=PATH msg=audit(10/28/26 08:43:47.754:749) : item=0 name=/etc/passwd inode=17346 dev=fd:01 mode=file,644 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0 
+type=CWD msg=audit(10/28/26 08:43:47.754:749) : cwd=/home/alice 
+type=SYSCALL msg=audit(10/28/26 08:43:47.754:749) : arch=x86_64 syscall=openat success=yes exit=3 a0=AT_FDCWD a1=0x7fffa53ebec2 a2=O_RDONLY a3=0x0 items=1 ppid=2049 pid=2060 auid=alice uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=(none) ses=15 comm=cat exe=/usr/bin/cat subj=unconfined key=passwd_watch 
+
+=== Services ===
+active
+active
+active
+active
+$ root@tp2-security: true
+root@127.0.0.1: Permission denied (publickey).
+$ labadmin@tp2-security: true
+labadmin@127.0.0.1: Permission denied (publickey).
+PASS : Alice se connecte par clé, root et labadmin sont refusés.
+$ alice@tp2-security: sudo systemd-run --unit=ad10-test-80 --collect /usr/bin/python3 -m http.server 80
+Running as unit: ad10-test-80.service; invocation ID: d1f9063859494ae3b3c64eb30070c523
+$ alice@tp2-security: sudo systemd-run --unit=ad10-test-443 --collect /usr/bin/python3 -m http.server 443
+Running as unit: ad10-test-443.service; invocation ID: 26b492a1f2f64674b6fa83282954881d
+$ alice@tp2-security: sudo systemd-run --unit=ad10-test-8088 --collect /usr/bin/python3 -m http.server 8088
+Running as unit: ad10-test-8088.service; invocation ID: 5b7637894c934594992f757081db5801
+$ labadmin@tp1-admin: python3 -c 'import socket
+results = {}
+for port in [22, 80, 443, 8088]:
+    connection = socket.socket()
+    connection.settimeout(2)
+    results[port] = connection.connect_ex(('"'"'192.168.77.12'"'"', port)) == 0
+    connection.close()
+print(results)
+assert results == {22: True, 80: True, 443: True, 8088: False}
+'
+{22: True, 80: True, 443: True, 8088: False}
+$ alice@tp2-security: python3 -c 'import socket; s=socket.create_connection(('"'"'127.0.0.1'"'"',8088),2); print('"'"'Le service 8088 écoute bien localement.'"'"'); s.close()'
+Le service 8088 écoute bien localement.
+PASS : ports 22, 80, 443 ouverts ; port 8088 filtré malgré un service actif.
+$ labadmin@tp1-admin: python3 -c 'import subprocess, time
+for _ in range(4):
+    result = subprocess.run(['"'"'ssh'"'"', '"'"'-o'"'"', '"'"'BatchMode=yes'"'"', '"'"'-o'"'"', '"'"'StrictHostKeyChecking=accept-new'"'"', '"'"'-o'"'"', '"'"'UserKnownHostsFile=/tmp/ad10-probe-hosts'"'"', '"'"'-o'"'"', '"'"'ConnectTimeout=2'"'"', '"'"'-o'"'"', '"'"'IdentitiesOnly=yes'"'"', '"'"'-o'"'"', '"'"'IdentityFile=/dev/null'"'"', '"'"'intruder@192.168.77.12'"'"', '"'"'true'"'"'], capture_output=True, text=True)
+    print('"'"'Tentative refusée :'"'"', result.returncode)
+    time.sleep(1)
+'
+Tentative refusée : 255
+Tentative refusée : 255
+Tentative refusée : 255
+Tentative refusée : 255
+$ alice@tp2-security: sudo fail2ban-client status sshd
+Status for the jail: sshd
+|- Filter
+|  |- Currently failed:	0
+|  |- Total failed:	3
+|  `- Journal matches:	_SYSTEMD_UNIT=sshd.service + _COMM=sshd
+`- Actions
+   |- Currently banned:	1
+   |- Total banned:	1
+   `- Banned IP list:	192.168.77.11
+PASS : Fail2ban a banni la source après de vrais échecs SSH.
+$ alice@tp2-security: sudo fail2ban-client set sshd unbanip 192.168.77.11
+1
+$ alice@tp2-security: sudo systemctl stop ad10-test-80
+$ alice@tp2-security: sudo systemctl stop ad10-test-443
+$ alice@tp2-security: sudo systemctl stop ad10-test-8088
+$ alice@tp2-security: sudo nft list ruleset
+table inet filter {
+	chain input {
+		type filter hook input priority filter; policy drop;
+		iifname "lo" accept
+		ct state invalid drop
+		ct state established,related accept
+		iifname "ens3" udp sport 67 udp dport 68 accept
+		tcp dport { 22, 80, 443 } ct state new counter packets 24 bytes 1152 accept
+		counter packets 2 bytes 120 drop
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy drop;
+	}
+
+	chain output {
+		type filter hook output priority filter; policy accept;
+	}
+}
+table inet f2b-table {
+	set addr-set-sshd {
+		type ipv4_addr
+	}
+
+	chain f2b-chain {
+		type filter hook input priority filter - 1; policy accept;
+		tcp dport 22 ip saddr @addr-set-sshd reject with icmp port-unreachable
+	}
+}

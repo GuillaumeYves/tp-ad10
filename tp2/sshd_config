@@ -1,0 +1,27 @@
+# Écouter sur le port SSH standard.
+Port 22
+
+# Autoriser uniquement Alice avec une clé publique.
+PermitRootLogin no
+AllowUsers alice
+PubkeyAuthentication yes
+AuthenticationMethods publickey
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitEmptyPasswords no
+UsePAM yes
+AuthorizedKeysFile .ssh/authorized_keys
+
+# Réduire les possibilités de rebond et les tentatives.
+X11Forwarding no
+AllowTcpForwarding no
+AllowAgentForwarding no
+PermitTunnel no
+MaxAuthTries 3
+LoginGraceTime 30
+ClientAliveInterval 300
+ClientAliveCountMax 2
+
+# Conserver une trace des connexions et proposer SFTP.
+LogLevel VERBOSE
+Subsystem sftp internal-sftp

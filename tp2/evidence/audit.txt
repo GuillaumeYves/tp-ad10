@@ -1,0 +1,10 @@
+----
+type=PROCTITLE msg=audit(10/28/26 08:42:43.666:445) : proctitle=cat /etc/passwd 
+type=PATH msg=audit(10/28/26 08:42:43.666:445) : item=0 name=/etc/passwd inode=17346 dev=fd:01 mode=file,644 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0 
+type=CWD msg=audit(10/28/26 08:42:43.666:445) : cwd=/home/alice 
+type=SYSCALL msg=audit(10/28/26 08:42:43.666:445) : arch=x86_64 syscall=openat success=yes exit=3 a0=AT_FDCWD a1=0x7ffd96f95ea8 a2=O_RDONLY a3=0x0 items=1 ppid=1883 pid=1894 auid=alice uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=(none) ses=9 comm=cat exe=/usr/bin/cat subj=unconfined key=passwd_watch 
+----
+type=PROCTITLE msg=audit(10/28/26 08:43:47.754:749) : proctitle=cat /etc/passwd 
+type=PATH msg=audit(10/28/26 08:43:47.754:749) : item=0 name=/etc/passwd inode=17346 dev=fd:01 mode=file,644 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0 
+type=CWD msg=audit(10/28/26 08:43:47.754:749) : cwd=/home/alice 
+type=SYSCALL msg=audit(10/28/26 08:43:47.754:749) : arch=x86_64 syscall=openat success=yes exit=3 a0=AT_FDCWD a1=0x7fffa53ebec2 a2=O_RDONLY a3=0x0 items=1 ppid=2049 pid=2060 auid=alice uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=(none) ses=15 comm=cat exe=/usr/bin/cat subj=unconfined key=passwd_watch 

@@ -1,0 +1,10 @@
+[sshd]
+enabled = true
+backend = systemd
+port = ssh
+maxretry = 3
+findtime = 10m
+bantime = 10m
+banaction = nftables-multiport
+# Garder l'accès de gestion du laboratoire disponible.
+ignoreip = 127.0.0.1/8 ::1 10.0.2.2
