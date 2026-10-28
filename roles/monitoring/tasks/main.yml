@@ -1,0 +1,135 @@
+- name: Installer Prometheus et Alertmanager
+  ansible.builtin.apt:
+    name: [prometheus, prometheus-alertmanager, ca-certificates]
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Créer le répertoire des clés APT
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Télécharger la clé du dépôt officiel Grafana
+  ansible.builtin.get_url:
+    url: https://apt.grafana.com/gpg-full.key
+    dest: /etc/apt/keyrings/grafana.asc
+    mode: '0644'
+
+- name: Déclarer le dépôt stable Grafana OSS
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/grafana.list
+    mode: '0644'
+    content: 'deb [signed-by=/etc/apt/keyrings/grafana.asc] https://apt.grafana.com stable main'
+  register: grafana_repository
+
+- name: Installer Grafana
+  ansible.builtin.apt:
+    name: grafana
+    state: present
+    update_cache: '{{ grafana_repository.changed }}'
+
+- name: Créer les répertoires de données
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: '0755'
+  loop: [/var/lib/prometheus/metrics2, /var/lib/prometheus/alertmanager]
+
+- name: Déployer les règles d'alerte
+  ansible.builtin.copy:
+    src: alerts.yml
+    dest: /etc/prometheus/ad10-alerts.yml
+    mode: '0644'
+  notify: Restart Prometheus
+
+- name: Déployer la configuration Prometheus
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+    mode: '0644'
+    validate: /usr/bin/promtool check config %s
+  notify: Restart Prometheus
+
+- name: Définir les arguments Prometheus
+  ansible.builtin.copy:
+    dest: /etc/default/prometheus
+    mode: '0644'
+    content: |
+      ARGS="--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/var/lib/prometheus/metrics2 --storage.tsdb.retention.time=7d --web.listen-address=:9090"
+  notify: Restart Prometheus
+
+- name: Configurer Alertmanager
+  ansible.builtin.copy:
+    src: alertmanager.yml
+    dest: /etc/prometheus/alertmanager.yml
+    mode: '0644'
+  notify: Restart Alertmanager
+
+- name: Définir les arguments Alertmanager
+  ansible.builtin.copy:
+    dest: /etc/default/prometheus-alertmanager
+    mode: '0644'
+    content: |
+      ARGS="--config.file=/etc/prometheus/alertmanager.yml --storage.path=/var/lib/prometheus/alertmanager --web.listen-address=:9093 --cluster.listen-address="
+  notify: Restart Alertmanager
+
+- name: Déployer le récepteur local d'alertes
+  ansible.builtin.copy:
+    src: alert_receiver.py
+    dest: /usr/local/bin/ad10-alert-receiver
+    mode: '0755'
+  notify: Restart alert receiver
+
+- name: Installer le service de réception
+  ansible.builtin.copy:
+    src: ad10-alert-receiver.service
+    dest: /etc/systemd/system/ad10-alert-receiver.service
+    mode: '0644'
+  notify: Restart alert receiver
+
+- name: Configurer Grafana
+  ansible.builtin.template:
+    src: grafana.ini.j2
+    dest: /etc/grafana/grafana.ini
+    owner: root
+    group: grafana
+    mode: '0640'
+  no_log: true
+  notify: Restart Grafana
+
+- name: Créer le répertoire des tableaux de bord
+  ansible.builtin.file:
+    path: /var/lib/grafana/dashboards
+    state: directory
+    owner: grafana
+    group: grafana
+    mode: '0755'
+
+- name: Provisionner la source de données
+  ansible.builtin.copy:
+    src: datasource.yml
+    dest: /etc/grafana/provisioning/datasources/ad10.yml
+    mode: '0644'
+  notify: Restart Grafana
+
+- name: Provisionner le tableau de bord
+  ansible.builtin.copy:
+    src: '{{ item.source }}'
+    dest: '{{ item.destination }}'
+    mode: '0644'
+  loop:
+    - {source: dashboard-provider.yml, destination: /etc/grafana/provisioning/dashboards/ad10.yml}
+    - {source: dashboard.json, destination: /var/lib/grafana/dashboards/ad10.json}
+  notify: Restart Grafana
+
+- name: Activer les services de supervision
+  ansible.builtin.systemd_service:
+    name: '{{ item }}'
+    enabled: true
+    state: started
+    daemon_reload: true
+  loop: [ad10-alert-receiver, prometheus, prometheus-alertmanager, grafana-server]

@@ -1,0 +1,109 @@
+
+PLAY [Superviser les deux serveurs web] ****************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [web1]
+ok: [web2]
+
+TASK [node_exporter : Installer Node Exporter] *********************************
+changed: [web2]
+changed: [web1]
+
+TASK [node_exporter : Créer le répertoire des métriques locales] ***************
+changed: [web2]
+changed: [web1]
+
+TASK [node_exporter : Configurer l'écoute sur le réseau privé] *****************
+changed: [web2]
+changed: [web1]
+
+TASK [node_exporter : Activer Node Exporter] ***********************************
+ok: [web1]
+ok: [web2]
+
+RUNNING HANDLER [node_exporter : Restart Node Exporter] ************************
+changed: [web1]
+changed: [web2]
+
+PLAY [Installer la plateforme de supervision] **********************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [monitor]
+
+TASK [monitoring : Installer Prometheus et Alertmanager] ***********************
+changed: [monitor]
+
+TASK [monitoring : Créer le répertoire des clés APT] ***************************
+ok: [monitor]
+
+TASK [monitoring : Télécharger la clé du dépôt officiel Grafana] ***************
+[WARNING]: Module remote_tmp /root/.ansible/tmp did not exist and was created with a mode of 0700, this may cause issues when running as another user. To avoid this, create the remote_tmp dir with the correct permissions manually
+changed: [monitor]
+
+TASK [monitoring : Déclarer le dépôt stable Grafana OSS] ***********************
+changed: [monitor]
+
+TASK [monitoring : Installer Grafana] ******************************************
+changed: [monitor]
+
+TASK [monitoring : Créer les répertoires de données] ***************************
+ok: [monitor] => (item=/var/lib/prometheus/metrics2)
+ok: [monitor] => (item=/var/lib/prometheus/alertmanager)
+
+TASK [monitoring : Déployer les règles d'alerte] *******************************
+changed: [monitor]
+
+TASK [monitoring : Déployer la configuration Prometheus] ***********************
+changed: [monitor]
+
+TASK [monitoring : Définir les arguments Prometheus] ***************************
+changed: [monitor]
+
+TASK [monitoring : Configurer Alertmanager] ************************************
+changed: [monitor]
+
+TASK [monitoring : Définir les arguments Alertmanager] *************************
+changed: [monitor]
+
+TASK [monitoring : Déployer le récepteur local d'alertes] **********************
+changed: [monitor]
+
+TASK [monitoring : Installer le service de réception] **************************
+changed: [monitor]
+
+TASK [monitoring : Configurer Grafana] *****************************************
+changed: [monitor]
+
+TASK [monitoring : Créer le répertoire des tableaux de bord] *******************
+changed: [monitor]
+
+TASK [monitoring : Provisionner la source de données] **************************
+changed: [monitor]
+
+TASK [monitoring : Provisionner le tableau de bord] ****************************
+changed: [monitor] => (item={'source': 'dashboard-provider.yml', 'destination': '/etc/grafana/provisioning/dashboards/ad10.yml'})
+changed: [monitor] => (item={'source': 'dashboard.json', 'destination': '/var/lib/grafana/dashboards/ad10.json'})
+
+TASK [monitoring : Activer les services de supervision] ************************
+changed: [monitor] => (item=ad10-alert-receiver)
+ok: [monitor] => (item=prometheus)
+ok: [monitor] => (item=prometheus-alertmanager)
+changed: [monitor] => (item=grafana-server)
+
+RUNNING HANDLER [monitoring : Restart Prometheus] ******************************
+changed: [monitor]
+
+RUNNING HANDLER [monitoring : Restart Alertmanager] ****************************
+changed: [monitor]
+
+RUNNING HANDLER [monitoring : Restart Grafana] *********************************
+changed: [monitor]
+
+RUNNING HANDLER [monitoring : Restart alert receiver] **************************
+changed: [monitor]
+
+PLAY RECAP *********************************************************************
+monitor                    : ok=23   changed=20   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+web1                       : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+web2                       : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

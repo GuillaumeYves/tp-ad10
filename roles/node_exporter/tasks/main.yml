@@ -1,0 +1,28 @@
+- name: Installer Node Exporter
+  ansible.builtin.apt:
+    name: prometheus-node-exporter
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Créer le répertoire des métriques locales
+  ansible.builtin.file:
+    path: /var/lib/prometheus/node-exporter
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: '0755'
+
+- name: Configurer l'écoute sur le réseau privé
+  ansible.builtin.copy:
+    dest: /etc/default/prometheus-node-exporter
+    mode: '0644'
+    content: |
+      ARGS="--web.listen-address={{ private_address }}:9100 --collector.textfile.directory=/var/lib/prometheus/node-exporter"
+  notify: Restart Node Exporter
+
+- name: Activer Node Exporter
+  ansible.builtin.service:
+    name: prometheus-node-exporter
+    enabled: true
+    state: started

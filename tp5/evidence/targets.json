@@ -1,0 +1,75 @@
+[
+  {
+    "discoveredLabels": {
+      "__address__": "192.168.77.21:9100",
+      "__metrics_path__": "/metrics",
+      "__scheme__": "http",
+      "__scrape_interval__": "15s",
+      "__scrape_timeout__": "10s",
+      "host": "web1",
+      "job": "nodes"
+    },
+    "labels": {
+      "host": "web1",
+      "instance": "192.168.77.21:9100",
+      "job": "nodes"
+    },
+    "scrapePool": "nodes",
+    "scrapeUrl": "http://192.168.77.21:9100/metrics",
+    "globalUrl": "http://192.168.77.21:9100/metrics",
+    "lastError": "",
+    "lastScrape": "2026-10-28T09:01:46.560284848Z",
+    "lastScrapeDuration": 0.053802587,
+    "health": "up",
+    "scrapeInterval": "15s",
+    "scrapeTimeout": "10s"
+  },
+  {
+    "discoveredLabels": {
+      "__address__": "192.168.77.22:9100",
+      "__metrics_path__": "/metrics",
+      "__scheme__": "http",
+      "__scrape_interval__": "15s",
+      "__scrape_timeout__": "10s",
+      "host": "web2",
+      "job": "nodes"
+    },
+    "labels": {
+      "host": "web2",
+      "instance": "192.168.77.22:9100",
+      "job": "nodes"
+    },
+    "scrapePool": "nodes",
+    "scrapeUrl": "http://192.168.77.22:9100/metrics",
+    "globalUrl": "http://192.168.77.22:9100/metrics",
+    "lastError": "",
+    "lastScrape": "2026-10-28T09:01:39.466977764Z",
+    "lastScrapeDuration": 0.077896397,
+    "health": "up",
+    "scrapeInterval": "15s",
+    "scrapeTimeout": "10s"
+  },
+  {
+    "discoveredLabels": {
+      "__address__": "127.0.0.1:9090",
+      "__metrics_path__": "/metrics",
+      "__scheme__": "http",
+      "__scrape_interval__": "15s",
+      "__scrape_timeout__": "10s",
+      "job": "prometheus"
+    },
+    "labels": {
+      "instance": "127.0.0.1:9090",
+      "job": "prometheus"
+    },
+    "scrapePool": "prometheus",
+    "scrapeUrl": "http://127.0.0.1:9090/metrics",
+    "globalUrl": "http://monitor:9090/metrics",
+    "lastError": "",
+    "lastScrape": "2026-10-28T09:01:43.489871657Z",
+    "lastScrapeDuration": 0.008044857,
+    "health": "up",
+    "scrapeInterval": "15s",
+    "scrapeTimeout": "10s"
+  }
+]

@@ -1,0 +1,10 @@
+- name: Superviser les deux serveurs web
+  hosts: web
+  become: true
+  roles: [node_exporter]
+
+- name: Installer la plateforme de supervision
+  hosts: monitoring
+  become: true
+  vars_files: [../.lab/secrets.json]
+  roles: [monitoring]

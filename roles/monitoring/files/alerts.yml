@@ -1,0 +1,18 @@
+groups:
+  - name: ad10
+    rules:
+      - alert: MemoryUsageHigh
+        expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'RAM supérieure à 80 % sur {{ $labels.host }}'
+          description: La mémoire disponible représente moins de 20 % du total depuis deux minutes.
+      - alert: NodeUnavailable
+        expr: up{job="nodes"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Exporteur indisponible sur {{ $labels.host }}'

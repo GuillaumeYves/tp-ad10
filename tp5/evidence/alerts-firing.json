@@ -1,0 +1,18 @@
+[
+  {
+    "labels": {
+      "alertname": "MemoryUsageHigh",
+      "host": "web1",
+      "instance": "192.168.77.21:9100",
+      "job": "nodes",
+      "severity": "warning"
+    },
+    "annotations": {
+      "description": "La mémoire disponible représente moins de 20 % du total depuis deux minutes.",
+      "summary": "RAM supérieure à 80 % sur web1"
+    },
+    "state": "firing",
+    "activeAt": "2026-10-28T09:02:10.509712851Z",
+    "value": "8.674037105587873e+01"
+  }
+]

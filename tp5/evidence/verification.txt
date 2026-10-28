@@ -1,0 +1,53 @@
+PASS : les deux serveurs sont collectés par Prometheus.
+$ monitor: sudo tee /tmp/ad10-alert-tests.yml >/dev/null
+
+$ monitor: promtool check config /etc/prometheus/prometheus.yml; promtool test rules /tmp/ad10-alert-tests.yml
+Checking /etc/prometheus/prometheus.yml
+  SUCCESS: 1 rule files found
+ SUCCESS: /etc/prometheus/prometheus.yml is valid prometheus config file syntax
+
+Checking /etc/prometheus/ad10-alerts.yml
+  SUCCESS: 2 rules found
+
+Unit Testing:  /tmp/ad10-alert-tests.yml
+  SUCCESS
+
+
+PASS : le tableau de bord personnalisé est provisionné.
+$ web1: sudo tee /tmp/ad10-memory-load.py >/dev/null
+
+$ web1: sudo systemd-run --unit=ad10-memory-test --collect -p MemoryMax=600M -p RuntimeMaxSec=250 /usr/bin/python3 /tmp/ad10-memory-load.py
+Running as unit: ad10-memory-test.service; invocation ID: ca67249d28d2422c98868aa71cf64d3b
+
+État de l’alerte mémoire : []
+État de l’alerte mémoire : []
+État de l’alerte mémoire : ['pending']
+État de l’alerte mémoire : ['pending']
+État de l’alerte mémoire : ['pending']
+État de l’alerte mémoire : ['pending']
+État de l’alerte mémoire : ['pending']
+État de l’alerte mémoire : ['pending']
+État de l’alerte mémoire : ['pending']
+État de l’alerte mémoire : ['pending']
+État de l’alerte mémoire : ['firing']
+PASS : alerte réelle après dépassement prolongé, reçue par Alertmanager.
+$ web1: sudo systemctl stop ad10-memory-test
+
+$ monitor: sudo journalctl -u ad10-alert-receiver --since "10 minutes ago" --no-pager -o cat
+Started ad10-alert-receiver.service - Réception locale des alertes AD10.
+Stopping ad10-alert-receiver.service - Réception locale des alertes AD10...
+ad10-alert-receiver.service: Deactivated successfully.
+Stopped ad10-alert-receiver.service - Réception locale des alertes AD10.
+Started ad10-alert-receiver.service - Réception locale des alertes AD10.
+{"receiver": "local-journal", "status": "firing", "alerts": [{"status": "firing", "labels": {"alertname": "MemoryUsageHigh", "host": "web1", "instance": "192.168.77.21:9100", "job": "nodes", "severity": "warning"}, "annotations": {"description": "La mémoire disponible représente moins de 20 % du total depuis deux minutes.", "summary": "RAM supérieure à 80 % sur web1"}, "startsAt": "2026-10-28T09:04:10.509Z", "endsAt": "0001-01-01T00:00:00Z", "generatorURL": "http://monitor:9090/graph?g0.expr=%281+-+node_memory_MemAvailable_bytes+%2F+node_memory_MemTotal_bytes%29+%2A+100+%3E+80&g0.tab=1", "fingerprint": "260532906fdf7bb9"}], "groupLabels": {"alertname": "MemoryUsageHigh", "host": "web1"}, "commonLabels": {"alertname": "MemoryUsageHigh", "host": "web1", "instance": "192.168.77.21:9100", "job": "nodes", "severity": "warning"}, "commonAnnotations": {"description": "La mémoire disponible représente moins de 20 % du total depuis deux minutes.", "summary": "RAM supérieure à 80 % sur web1"}, "externalURL": "http://monitor:9093", "version": "4", "groupKey": "{}:{alertname=\"MemoryUsageHigh\", host=\"web1\"}", "truncatedAlerts": 0}
+127.0.0.1 - - [28/Oct/2026 09:04:15] "POST /alerts HTTP/1.1" 200 -
+{"receiver": "local-journal", "status": "resolved", "alerts": [{"status": "resolved", "labels": {"alertname": "MemoryUsageHigh", "host": "web1", "instance": "192.168.77.21:9100", "job": "nodes", "severity": "warning"}, "annotations": {"description": "La mémoire disponible représente moins de 20 % du total depuis deux minutes.", "summary": "RAM supérieure à 80 % sur web1"}, "startsAt": "2026-10-28T09:04:10.509Z", "endsAt": "2026-10-28T09:05:10.509Z", "generatorURL": "http://monitor:9090/graph?g0.expr=%281+-+node_memory_MemAvailable_bytes+%2F+node_memory_MemTotal_bytes%29+%2A+100+%3E+80&g0.tab=1", "fingerprint": "260532906fdf7bb9"}], "groupLabels": {"alertname": "MemoryUsageHigh", "host": "web1"}, "commonLabels": {"alertname": "MemoryUsageHigh", "host": "web1", "instance": "192.168.77.21:9100", "job": "nodes", "severity": "warning"}, "commonAnnotations": {"description": "La mémoire disponible représente moins de 20 % du total depuis deux minutes.", "summary": "RAM supérieure à 80 % sur web1"}, "externalURL": "http://monitor:9093", "version": "4", "groupKey": "{}:{alertname=\"MemoryUsageHigh\", host=\"web1\"}", "truncatedAlerts": 0}
+127.0.0.1 - - [28/Oct/2026 09:05:15] "POST /alerts HTTP/1.1" 200 -
+
+$ monitor: dpkg-query -W prometheus prometheus-node-exporter prometheus-alertmanager grafana
+grafana	13.2.4
+prometheus	2.45.3+ds-2ubuntu0.3
+prometheus-alertmanager	0.26.0+ds-1ubuntu0.3
+prometheus-node-exporter	1.7.0-1ubuntu0.3
+
+PASS : notification locale de déclenchement et de résolution ; mémoire libérée.

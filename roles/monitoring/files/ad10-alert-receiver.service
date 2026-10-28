@@ -1,0 +1,15 @@
+[Unit]
+Description=Réception locale des alertes AD10
+After=network.target
+
+[Service]
+User=prometheus
+ExecStart=/usr/local/bin/ad10-alert-receiver
+Restart=on-failure
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
